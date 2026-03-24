@@ -1,0 +1,79 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+@use "../../../styles/functions" as *;
+
+.category-delete-modal {
+  background: $surface-card;
+  border-radius: $radius-xl;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: $shadow-soft;
+  overflow: hidden;
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: grid;
+    place-items: center;
+    padding: $space-4;
+    z-index: 50;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    padding: $space-5;
+    border-bottom: 1px solid $border-default;
+  }
+
+  &__title {
+    margin: 0;
+  }
+
+  &__text {
+    padding: $space-5;
+  }
+
+  &__options {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    padding: 0 $space-5 $space-5;
+  }
+
+  &__option {
+    padding: $space-4;
+    border-radius: $radius-lg;
+    border: 1px solid $border-default;
+    cursor: pointer;
+
+    &:hover {
+      @include hover-lift;
+    }
+
+    &--danger {
+      background: $delete-action-bg;
+      color: $delete-action-text;
+    }
+  }
+
+  &__footer {
+    padding: $space-5;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__cancel {
+    border-radius: $radius-lg;
+    background: $surface-card;
+    color: $text-primary;
+    border: 1px solid $border-default;
+    padding: $space-3 $space-5;
+
+    &:hover {
+      @include hover-lift;
+      background: mix(black, $surface-card, 15%);
+    }
+  }
+}

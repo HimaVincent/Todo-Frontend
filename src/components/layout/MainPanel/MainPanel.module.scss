@@ -1,0 +1,78 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/breakpoints" as *;
+
+.main-panel {
+  width: 100%;
+  background: $surface-card;
+  border-radius: $radius-xl;
+  overflow: hidden;
+
+  &__header {
+    padding: $space-6;
+    background: $surface-card;
+  }
+
+  &__greeting {
+    margin: 0 0 $space-2;
+    font-size: $text-2xl;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: $text-secondary;
+    opacity: 0.9;
+    line-height: 1.5;
+  }
+
+  &__toolbar {
+    position: relative;
+    padding: $space-5 $space-6;
+    background: $surface-card;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: $space-3;
+      pointer-events: none;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.02) 40%, rgba(0, 0, 0, 0.008) 70%, rgba(0, 0, 0, 0) 100%);
+    }
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: $space-6;
+    padding: $space-6;
+  }
+
+  &__modal {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: $space-4;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 2;
+  }
+
+  &__modal-content {
+    width: 100%;
+    max-width: 32rem;
+    padding: $space-6;
+    border-radius: $radius-xl;
+    background: $surface-card;
+    box-shadow: $shadow-soft;
+  }
+}
+
+@include desktop {
+  .main-panel {
+    flex: 1;
+  }
+  .main-panel__greeting {
+    font-size: $text-2xl;
+  }
+}

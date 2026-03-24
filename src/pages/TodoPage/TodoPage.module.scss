@@ -1,0 +1,26 @@
+@use "../../styles/variables" as *;
+@use "../../styles/mixins" as *;
+@use "../../styles/breakpoints" as *;
+
+.todo-page {
+  min-height: 100vh;
+  padding: $space-4;
+  background: $surface-page;
+
+  @include tablet {
+    padding: $space-6;
+  }
+
+  &__container {
+    display: flex;
+    flex-direction: column;
+    gap: $space-5;
+    max-width: 1400px;
+    margin: 0 auto;
+
+    @include tablet {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+  }
+}

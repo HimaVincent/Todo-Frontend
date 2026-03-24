@@ -1,0 +1,144 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+@use "../../../styles/functions" as *;
+
+.filter-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: $space-2;
+  padding: $space-3 $space-4;
+  border-radius: $radius-lg;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition:
+    background $transition-fast,
+    transform $transition-fast,
+    box-shadow $transition-fast,
+    border-color $transition-fast;
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  &__label {
+    font-size: $text-md;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__count {
+    align-self: flex-end;
+    font-size: $text-xl;
+    font-weight: $font-weight-bold;
+  }
+
+  &--today {
+    background: $today-bg;
+    color: $today-text;
+
+    &:hover {
+      background: hover-color($today-bg);
+      @include hover-lift;
+    }
+
+    &:active {
+      background: active-color($today-bg);
+    }
+
+    &.filter-card--active {
+      border-color: active-color($today-bg);
+    }
+  }
+
+  &--overdue {
+    background: $overdue-bg;
+    color: $overdue-text;
+
+    &:hover {
+      background: hover-color($overdue-bg);
+      @include hover-lift;
+    }
+
+    &:active {
+      background: active-color($overdue-bg);
+    }
+
+    &.filter-card--active {
+      border-color: active-color($overdue-bg);
+    }
+  }
+
+  &--scheduled {
+    background: $scheduled-bg;
+    color: $scheduled-text;
+
+    &:hover {
+      background: hover-color($scheduled-bg);
+      @include hover-lift;
+    }
+
+    &:active {
+      background: active-color($scheduled-bg);
+    }
+
+    &.filter-card--active {
+      border-color: active-color($scheduled-bg);
+    }
+  }
+
+  &--unscheduled {
+    background: $unscheduled-bg;
+    color: $unscheduled-text;
+
+    &:hover {
+      background: hover-color($unscheduled-bg);
+      @include hover-lift;
+    }
+
+    &:active {
+      background: active-color($unscheduled-bg);
+    }
+
+    &.filter-card--active {
+      border-color: active-color($unscheduled-bg);
+    }
+  }
+
+  &--all {
+    background: $all-bg;
+    color: $all-text;
+
+    &:hover {
+      background: hover-color($all-bg);
+      @include hover-lift;
+    }
+
+    &:active {
+      background: active-color($all-bg);
+    }
+
+    &.filter-card--active {
+      border-color: active-color($all-bg);
+    }
+  }
+
+  &--completed {
+    background: $completed-bg;
+    color: $completed-text;
+
+    &:hover {
+      background: hover-color($completed-bg);
+      @include hover-lift;
+    }
+
+    &:active {
+      background: active-color($completed-bg);
+    }
+
+    &.filter-card--active {
+      border-color: active-color($completed-bg);
+    }
+  }
+}

@@ -1,0 +1,47 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/functions" as *;
+
+.task-filter-chips {
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-2 $space-3;
+    border: 2px solid transparent;
+    border-radius: $radius-pill;
+    background: transparent;
+    font-size: $text-sm;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+
+    &--today {
+      background: $today-bg;
+      color: $today-text;
+      border-color: active-color($today-bg);
+    }
+
+    &--overdue {
+      background: $overdue-bg;
+      color: $overdue-text;
+      border-color: active-color($overdue-bg);
+    }
+
+    &--scheduled {
+      background: $scheduled-bg;
+      color: $scheduled-text;
+      border-color: active-color($scheduled-bg);
+    }
+
+    &--unscheduled {
+      background: $unscheduled-bg;
+      color: $unscheduled-text;
+      border-color: active-color($unscheduled-bg);
+    }
+
+    &--completed {
+      background: $completed-bg;
+      color: $completed-text;
+      border-color: active-color($completed-bg);
+    }
+  }
+}

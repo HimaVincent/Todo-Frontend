@@ -1,0 +1,104 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  &__header {
+    margin-bottom: $space-2;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $text-xl;
+    font-weight: $font-weight-semibold;
+    color: $text-primary;
+  }
+
+  &__field {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__label {
+    font-size: $text-sm;
+    font-weight: $font-weight-medium;
+    color: $text-secondary;
+  }
+
+  &__input,
+  &__select,
+  &__textarea {
+    @include input-field;
+    background: $surface-page;
+    color: $text-primary;
+    border: 1px solid $border-default;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+  }
+
+  &__input {
+    cursor: text;
+
+    &--date {
+      cursor: pointer;
+    }
+  }
+
+  &__select {
+    cursor: pointer;
+  }
+
+  &__textarea {
+    resize: vertical;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: $space-3;
+    margin-top: $space-3;
+  }
+
+  &__button {
+    min-height: 44px;
+    padding: 0 $space-4;
+    border: none;
+    border-radius: $radius-lg;
+    font: inherit;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition:
+      background $transition-medium,
+      transform $transition-fast;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+
+    &--secondary {
+      background: $surface-page;
+      color: $text-primary;
+      border: 1px solid $border-default;
+
+      &:hover {
+        @include hover-lift;
+      }
+    }
+
+    &--primary {
+      background: $color-primary;
+      color: $surface-card;
+      border: none;
+
+      &:hover {
+        @include hover-lift;
+      }
+    }
+  }
+}

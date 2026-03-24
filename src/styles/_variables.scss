@@ -1,0 +1,138 @@
+// ===============================
+// SURFACE / BACKGROUNDS
+// ===============================
+
+$surface-page: #f3f6ff;
+$surface-card: #ffffff;
+
+// ===============================
+// TEXT
+// ===============================
+
+$text-primary: #1f2940;
+$text-secondary: #697792;
+
+// ===============================
+// BRAND / PRIMARY
+// ===============================
+
+$color-primary: #5c73f2;
+
+// ===============================
+// BORDERS
+// ===============================
+
+$border-default: #dce2ee;
+
+// ===============================
+// STATES
+// ===============================
+
+$color-focus-ring: #bec6f3;
+
+// ===============================
+// FILTER VARIANTS
+// ===============================
+
+// Today
+$today-bg: #e7dcff;
+$today-text: #5b3cc4;
+
+// Overdue
+$overdue-bg: #f4dce5;
+$overdue-text: #a63b5a;
+
+// Scheduled
+$scheduled-bg: #f4e8c6;
+$scheduled-text: #8a6a00;
+
+// Unscheduled
+$unscheduled-bg: #dfe9f6;
+$unscheduled-text: #335c8a;
+
+// Completed
+$completed-bg: #e5e7eb;
+$completed-text: #4b5563;
+
+// All (neutral)
+$all-bg: #e6f7ef;
+$all-text: #1c8b5c;
+
+// ===============================
+// ACTION VARIANTS
+// ===============================
+
+// today
+$today-action-bg: $today-bg;
+$today-action-text: $today-text;
+
+// edit yellow
+$edit-action-bg: $scheduled-bg;
+$edit-action-text: $scheduled-text;
+
+// duplicate green
+$duplicate-action-bg: $all-bg;
+$duplicate-action-text: $all-text;
+
+// delete
+$delete-action-bg: $overdue-bg;
+$delete-action-text: $overdue-text;
+
+//restore
+$restore-action-bg: $completed-bg;
+$restore-action-text: $completed-text;
+
+// ===============================
+// SPACING SCALE
+// ===============================
+
+$space-1: 4px;
+$space-2: 8px;
+$space-3: 12px;
+$space-4: 16px;
+$space-5: 20px;
+$space-6: 24px;
+$space-7: 32px;
+$space-8: 40px;
+
+// ===============================
+// Typography
+// ===============================
+
+$text-xs: 12px;
+$text-sm: 14px;
+$text-md: 16px;
+$text-lg: 18px;
+$text-xl: 20px;
+$text-2xl: 24px;
+$text-3xl: 30px;
+
+// Font weights
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+
+// ===============================
+// RADIUS
+// ===============================
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+$radius-pill: 999px;
+
+// ===============================
+// SHADOWS
+// ===============================
+
+$shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.05);
+$shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+// ===============================
+// TRANSITIONS
+// ===============================
+
+$transition-fast: 0.15s ease;
+$transition-medium: 0.25s ease;

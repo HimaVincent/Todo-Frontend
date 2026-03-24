@@ -1,0 +1,13 @@
+@use "sass:color";
+
+@function hover-color($color) {
+  @return color.scale($color, $lightness: -6%);
+}
+
+@function active-color($color) {
+  @return color.scale($color, $lightness: -10%);
+}
+
+@function border-color($color) {
+  @return color.scale($color, $lightness: -12%);
+}

@@ -1,0 +1,30 @@
+@use "../../../styles/variables" as *;
+
+.completed-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  border-top: 1px dashed $border-default;
+
+  &__title {
+    margin: $space-4;
+    font-size: $text-xl;
+    font-weight: $font-weight-bold;
+    color: $text-secondary;
+  }
+
+  &__items {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+  }
+
+  &__item {
+    padding: $space-4;
+    border: 1px solid $border-default;
+    border-radius: $radius-xl;
+    color: $text-secondary;
+    text-decoration: line-through;
+    background: $surface-card;
+  }
+}

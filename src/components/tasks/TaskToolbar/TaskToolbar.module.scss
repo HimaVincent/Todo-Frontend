@@ -1,0 +1,85 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+@use "../../../styles/breakpoints" as *;
+
+.task-toolbar {
+  display: grid;
+  gap: $space-3;
+  grid-template-columns: 1fr;
+
+  &__search {
+    @include input-field;
+  }
+
+  &__sort {
+    @include input-field;
+    cursor: pointer;
+  }
+
+  &__button {
+    min-height: 52px;
+    padding: 0 $space-6;
+    border: none;
+    border-radius: $radius-lg;
+    background: $color-primary;
+    color: $surface-card;
+    font: inherit;
+    font-size: $text-sm;
+    font-weight: $font-weight-bold;
+    cursor: pointer;
+    transition:
+      transform $transition-fast,
+      box-shadow $transition-fast,
+      background $transition-fast;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+
+    &:hover {
+      @include hover-lift;
+    }
+  }
+}
+
+@include tablet {
+  .task-toolbar {
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+
+    &__search {
+      grid-column: 1 / -1;
+    }
+
+    &__sort {
+      grid-column: 1 / 2;
+    }
+
+    &__add-button {
+      grid-column: 2 / 3;
+      width: auto;
+      justify-self: end;
+    }
+  }
+}
+
+@include desktop {
+  .task-toolbar {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+
+    &__search {
+      grid-column: auto;
+    }
+
+    &__sort {
+      grid-column: auto;
+    }
+
+    &__add-button {
+      grid-column: auto;
+      width: auto;
+      justify-self: auto;
+    }
+  }
+}
