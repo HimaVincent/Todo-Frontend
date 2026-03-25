@@ -18,6 +18,7 @@ interface Task {
   dueAt?: string | null;
   description?: string;
   filterType: string;
+  completed: boolean;
 }
 
 interface TaskListProps {
@@ -25,32 +26,90 @@ interface TaskListProps {
   filter: FilterVariant;
   onFilterChange: (filter: FilterVariant) => void;
   activeCategoryId: number | null;
+  onCategoryChange: (id: number | null) => void;
   categories: Category[];
+  onDeleteTask: (taskId: number) => void;
+  onSetTaskToToday: (taskId: number) => void;
+  onDuplicateTask: (taskId: number) => void;
+  onToggleComplete: (taskId: number) => void;
 }
 
-export function TaskList({ tasks, filter, onFilterChange, activeCategoryId, categories }: TaskListProps) {
+export function TaskList({
+  tasks,
+  filter,
+  onFilterChange,
+  activeCategoryId,
+  onCategoryChange,
+  categories,
+  onDeleteTask,
+  onSetTaskToToday,
+  onDuplicateTask,
+  onToggleComplete,
+}: TaskListProps) {
   const activeCategoryName = activeCategoryId === null ? null : (categories.find((category) => category.id === activeCategoryId)?.name ?? null);
 
-  const filterMatchedTasks = filter === "all" ? tasks : tasks.filter((task) => task.filterType === filter);
+  const activeTasks = tasks.filter((task) => !task.completed);
+
+  const filterMatchedTasks = filter === "all" ? activeTasks : activeTasks.filter((task) => task.filterType === filter);
 
   const visibleTasks = activeCategoryId === null ? filterMatchedTasks : filterMatchedTasks.filter((task) => task.categoryId === activeCategoryId);
 
-  const title = activeCategoryName === null ? (filter === "all" ? "All tasks" : "Tasks") : activeCategoryName;
+  const showAllTasksHeading = filter === "all" && activeCategoryName === null;
+  const showFilterChip = filter !== "all";
+  const showCategoryChip = activeCategoryName !== null;
 
   return (
     <div className={styles["task-list"]}>
       <div className={styles["task-list__header"]}>
-        <div className={styles["task-list__chip-slot"]}>
-          {filter !== "all" ? <TaskFilterChips activeFilter={filter} onClear={() => onFilterChange("all")} /> : null}
-        </div>
+        <h2 className={styles["task-list__title"]}>
+          {showAllTasksHeading ? (
+            "All tasks"
+          ) : (
+            <>
+              {showFilterChip ? (
+                <>
+                  <TaskFilterChips activeFilter={filter} onClear={() => onFilterChange("all")} />
+                  <span className={styles["task-list__title-text"]}>tasks</span>
+                </>
+              ) : (
+                <span className={styles["task-list__title-text"]}>Tasks</span>
+              )}
 
-        <h2 className={styles["task-list__title"]}>{title}</h2>
+              {showCategoryChip ? (
+                <>
+                  <span className={styles["task-list__title-text"]}>in</span>
+                  <button
+                    type="button"
+                    className={`${styles["task-list__chip"]} ${styles["task-list__chip--category"]}`}
+                    onClick={() => onCategoryChange(null)}
+                  >
+                    <span>{activeCategoryName}</span>
+                    <span className={styles["task-list__chip-close"]}>×</span>
+                  </button>
+                  <span className={styles["task-list__title-text"]}>category</span>
+                </>
+              ) : null}
+            </>
+          )}
+        </h2>
       </div>
 
       {visibleTasks.length > 0 ? (
         <div className={styles["task-list__items"]}>
           {visibleTasks.map((task) => (
-            <TaskCard key={task.id} title={task.title} category={task.category} dueAt={task.dueAt} description={task.description} />
+            <TaskCard
+              key={task.id}
+              id={task.id}
+              title={task.title}
+              category={task.category}
+              dueAt={task.dueAt}
+              description={task.description}
+              onDeleteTask={onDeleteTask}
+              onSetTaskToToday={onSetTaskToToday}
+              onDuplicateTask={onDuplicateTask}
+              onToggleComplete={onToggleComplete}
+              completed={task.completed}
+            />
           ))}
         </div>
       ) : (

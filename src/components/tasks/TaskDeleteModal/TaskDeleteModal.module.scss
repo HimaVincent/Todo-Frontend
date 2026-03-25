@@ -1,0 +1,74 @@
+@use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+@use "../../../styles/functions" as *;
+
+.task-delete-modal {
+  background: $surface-card;
+  border-radius: $radius-xl;
+  padding: $space-6;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: $shadow-soft;
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: $space-4;
+    z-index: 100;
+  }
+
+  &__header {
+    margin-bottom: $space-3;
+    border-bottom: 1px solid $border-default;
+  }
+
+  &__title {
+    font-size: $text-lg;
+    font-weight: $font-weight-semibold;
+  }
+
+  &__text {
+    font-size: $text-sm;
+    margin-bottom: $space-5;
+    color: $text-secondary;
+  }
+
+  &__actions {
+    display: flex;
+    gap: $space-3;
+    justify-content: flex-end;
+  }
+
+  &__button {
+    padding: $space-2 $space-4;
+    border-radius: $radius-md;
+    border: none;
+    font-size: $text-sm;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+    transition: background $transition-fast;
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+
+    &:hover {
+      background: border-color($surface-card);
+      @include hover-lift;
+    }
+
+    &--danger {
+      background: $delete-action-bg;
+      color: $delete-action-text;
+
+      &:hover {
+        background: hover-color($delete-action-bg);
+        @include hover-lift;
+      }
+    }
+  }
+}

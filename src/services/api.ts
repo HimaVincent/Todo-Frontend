@@ -1,0 +1,17 @@
+const API_BASE_URL = "http://localhost:8080/api/v1";
+
+export async function apiRequest(path: string, options?: RequestInit) {
+  const response = await fetch(`${API_BASE_URL}${path}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options?.headers ?? {}),
+    },
+    ...options,
+  });
+
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
+  }
+
+  return response.json();
+}

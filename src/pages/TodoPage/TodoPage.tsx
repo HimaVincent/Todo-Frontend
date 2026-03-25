@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Sidebar } from "../../components/layout/Sidebar/Sidebar";
 import { MainPanel } from "../../components/layout/MainPanel/MainPanel";
 import { CategoryDeleteModal } from "../../components/categories/CategoryDeleteModal/CategoryDeleteModal";
+import { TaskDeleteModal } from "../../components/tasks/TaskDeleteModal/TaskDeleteModal";
 import styles from "./TodoPage.module.scss";
+import { createTask } from "../../services/taskService";
 
 type FilterVariant = "today" | "overdue" | "scheduled" | "unscheduled" | "all" | "completed";
 type CategoryDeleteMode = "keep_tasks" | "delete_all_tasks";
@@ -20,6 +22,7 @@ interface Task {
   dueAt: string | null;
   description?: string;
   filterType: string;
+  completed: boolean;
 }
 
 interface NewTaskInput {
@@ -45,6 +48,7 @@ export function TodoPage() {
       category: "Shopping",
       dueAt: "2026-03-16",
       filterType: "today",
+      completed: false,
     },
     {
       id: 2,
@@ -53,24 +57,24 @@ export function TodoPage() {
       category: "Personal",
       dueAt: null,
       filterType: "overdue",
+      completed: false,
     },
   ]);
 
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterVariant>("all");
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
 
   const handleAddCategory = (name: string) => {
     const trimmedName = name.trim();
     if (!trimmedName) {
       return;
     }
-
     const alreadyExists = categories.some((category) => category.name.toLowerCase() === trimmedName.toLowerCase());
     if (alreadyExists) {
       return;
     }
-
     const newCategory: Category = {
       id: Date.now(),
       name: trimmedName,
@@ -85,33 +89,44 @@ export function TodoPage() {
       return;
     }
 
+    const currentCategory = categories.find((category) => category.id === id);
+
+    if (!currentCategory) {
+      return;
+    }
+
+    const isSameName = currentCategory.name.toLowerCase() === trimmedName.toLowerCase();
+
+    if (isSameName) {
+      return;
+    }
+
     const alreadyExists = categories.some((category) => category.name.toLowerCase() === trimmedName.toLowerCase() && category.id !== id);
 
     if (alreadyExists) {
       return;
     }
 
-    // update categories
     setCategories((prevCategories) => prevCategories.map((category) => (category.id === id ? { ...category, name: trimmedName } : category)));
 
-    // sync tasks
     setTasks((prevTasks) => prevTasks.map((task) => (task.categoryId === id ? { ...task, category: trimmedName } : task)));
   };
 
   const handleAddTask = (newTask: NewTaskInput) => {
-    const matchedCategory = categories.find((category) => category.id === newTask.categoryId);
+    const category = categories.find((c) => c.id === newTask.categoryId);
 
-    const task: Task = {
+    const taskToAdd: Task = {
       id: Date.now(),
       title: newTask.title,
-      categoryId: matchedCategory ? matchedCategory.id : null,
-      category: matchedCategory ? matchedCategory.name : "Uncategorised",
-      description: newTask.notes || undefined,
+      categoryId: newTask.categoryId,
+      category: category ? category.name : "Uncategorised",
       dueAt: newTask.dueAt,
-      filterType: "unscheduled",
+      description: newTask.notes ?? undefined,
+      filterType: "all",
+      completed: false,
     };
 
-    setTasks((prevTasks) => [task, ...prevTasks]);
+    setTasks((prevTasks) => [taskToAdd, ...prevTasks]);
   };
 
   const handleDeleteCategoryClick = (category: Category) => {
@@ -156,6 +171,59 @@ export function TodoPage() {
     setCategoryToDelete(null);
   };
 
+  const handleDeleteTask = (taskId: number) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+
+    setTaskToDelete(task);
+  };
+
+  const handleConfirmDeleteTask = () => {
+    if (!taskToDelete) return;
+
+    setTasks((prev) => prev.filter((task) => task.id !== taskToDelete.id));
+    setTaskToDelete(null);
+  };
+
+  const handleCancelDeleteTask = () => {
+    setTaskToDelete(null);
+  };
+
+  const handleSetTaskToToday = (taskId: number) => {
+    const today = new Date().toISOString().split("T")[0];
+
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              dueAt: today,
+            }
+          : task,
+      ),
+    );
+  };
+
+  const handleDuplicateTask = (taskId: number) => {
+    const taskToDuplicate = tasks.find((task) => task.id === taskId);
+
+    if (!taskToDuplicate) {
+      return;
+    }
+
+    const duplicatedTask: Task = {
+      ...taskToDuplicate,
+      id: Date.now(),
+      title: taskToDuplicate.title,
+    };
+
+    setTasks((prevTasks) => [duplicatedTask, ...prevTasks]);
+  };
+
+  const handleToggleComplete = (taskId: number) => {
+    setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? { ...task, completed: !task.completed } : task)));
+  };
+
   return (
     <div className={styles["todo-page"]}>
       <div className={styles["todo-page__container"]}>
@@ -177,12 +245,18 @@ export function TodoPage() {
           activeCategoryId={activeCategoryId}
           tasks={tasks}
           onAddTask={handleAddTask}
+          onCategoryChange={setActiveCategoryId}
+          onDeleteTask={handleDeleteTask}
+          onSetTaskToToday={handleSetTaskToToday}
+          onDuplicateTask={handleDuplicateTask}
+          onToggleComplete={handleToggleComplete}
         />
       </div>
 
       {categoryToDelete ? (
         <CategoryDeleteModal categoryName={categoryToDelete.name} onClose={handleCancelDeleteCategory} onConfirm={handleConfirmDeleteCategory} />
       ) : null}
+      {taskToDelete ? <TaskDeleteModal taskTitle={taskToDelete.title} onClose={handleCancelDeleteTask} onConfirm={handleConfirmDeleteTask} /> : null}
     </div>
   );
 }

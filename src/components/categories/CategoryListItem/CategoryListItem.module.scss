@@ -79,6 +79,11 @@
     flex-direction: column;
     gap: $space-3;
     width: 100%;
+
+    padding: $space-4;
+    border-radius: $radius-md;
+    border: 1px solid $edit-action-bg;
+    background: rgba($edit-action-bg, 0.3);
   }
 
   &__input {
@@ -117,11 +122,12 @@
     }
 
     &--primary {
-      background: $color-primary;
-      color: $surface-card;
+      background: active-color($edit-action-bg);
+      color: $edit-action-text;
+      border: 1px solid border-color($edit-action-bg);
 
       &:hover:not(:disabled) {
-        background: hover-color($color-primary);
+        background: hover-color($edit-action-bg);
         @include hover-lift;
       }
     }
@@ -135,5 +141,11 @@
         @include hover-lift;
       }
     }
+  }
+
+  &__error {
+    margin-top: $space-1;
+    font-size: $text-sm;
+    color: $delete-action-text;
   }
 }

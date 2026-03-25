@@ -25,6 +25,7 @@ export function CategoryList({ categories, activeCategoryId, onCategoryChange, o
           name={category.name}
           count={0}
           isActive={activeCategoryId === category.id}
+          categories={categories}
           onClick={() => onCategoryChange(category.id)}
           onDelete={() => onDeleteCategory(category)}
           onRename={(newName) => onRenameCategory(category.id, newName)}

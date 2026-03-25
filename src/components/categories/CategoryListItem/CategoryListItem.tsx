@@ -1,32 +1,69 @@
+import { useEffect, useState } from "react";
 import styles from "./CategoryListItem.module.scss";
 import { EditIcon, DeleteIcon } from "../../../assets/icons";
-import { useState } from "react";
+
+interface Category {
+  id: number;
+  name: string;
+}
 
 interface CategoryListItemProps {
   name: string;
   count: number;
   isActive?: boolean;
   isSystemCategory?: boolean;
+  categories?: Category[];
   onClick?: () => void;
   onDelete?: () => void;
   onRename?: (name: string) => void;
 }
 
-export function CategoryListItem({ name, count, isActive = false, isSystemCategory = false, onClick, onDelete, onRename }: CategoryListItemProps) {
+export function CategoryListItem({
+  name,
+  count,
+  isActive = false,
+  isSystemCategory = false,
+  categories = [],
+  onClick,
+  onDelete,
+  onRename,
+}: CategoryListItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState(name);
 
-  const trimmed = value.trim();
-  const isInvalid = !trimmed;
+  useEffect(() => {
+    setValue(name);
+  }, [name]);
+
+  const trimmedValue = value.trim();
+  const normalisedValue = trimmedValue.toLowerCase();
+  const normalisedName = name.trim().toLowerCase();
+
+  const isEmpty = !trimmedValue;
+  const isUnchanged = normalisedValue === normalisedName;
+
+  const categoryAlreadyExists = categories.some(
+    (category) => category.name.toLowerCase() === normalisedValue && category.name.toLowerCase() !== normalisedName,
+  );
+
+  const isSaveDisabled = isEmpty || isUnchanged || categoryAlreadyExists;
 
   const pillClassName = [styles["category-list-item__pill"], isActive && styles["category-list-item__pill--active"]].filter(Boolean).join(" ");
 
+  const buttonClassName = [
+    styles["category-list-item__button"],
+    styles["category-list-item__button--primary"],
+    isSaveDisabled && styles["category-list-item__button--disabled"],
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   const handleSave = () => {
-    if (isInvalid) {
+    if (isSaveDisabled) {
       return;
     }
 
-    onRename?.(trimmed);
+    onRename?.(trimmedValue);
     setIsEditing(false);
   };
 
@@ -41,6 +78,7 @@ export function CategoryListItem({ name, count, isActive = false, isSystemCatego
         <div className={styles["category-list-item__edit"]}>
           <input
             className={styles["category-list-item__input"]}
+            type="text"
             value={value}
             onChange={(event) => setValue(event.target.value)}
             autoFocus
@@ -55,13 +93,10 @@ export function CategoryListItem({ name, count, isActive = false, isSystemCatego
             }}
           />
 
+          {categoryAlreadyExists ? <p className={styles["category-list-item__error"]}>Category already exists</p> : null}
+
           <div className={styles["category-list-item__edit-actions"]}>
-            <button
-              className={`${styles["category-list-item__button"]} ${styles["category-list-item__button--primary"]}`}
-              type="button"
-              onClick={handleSave}
-              disabled={isInvalid}
-            >
+            <button className={buttonClassName} type="button" onClick={handleSave} disabled={isSaveDisabled}>
               Save
             </button>
 

@@ -15,6 +15,7 @@ interface Task {
   dueAt?: string | null;
   description?: string;
   filterType: string;
+  completed: boolean;
 }
 
 interface NewTaskInput {
@@ -31,9 +32,26 @@ interface MainPanelProps {
   activeCategoryId: number | null;
   tasks: Task[];
   onAddTask: (task: NewTaskInput) => void;
+  onCategoryChange: (id: number | null) => void;
+  onDeleteTask: (taskId: number) => void;
+  onSetTaskToToday: (taskId: number) => void;
+  onDuplicateTask: (taskId: number) => void;
+  onToggleComplete: (taskId: number) => void;
 }
 
-export function MainPanel({ activeFilter, onFilterChange, categories, activeCategoryId, tasks, onAddTask }: MainPanelProps) {
+export function MainPanel({
+  activeFilter,
+  onFilterChange,
+  categories,
+  activeCategoryId,
+  tasks,
+  onAddTask,
+  onCategoryChange,
+  onDeleteTask,
+  onSetTaskToToday,
+  onDuplicateTask,
+  onToggleComplete,
+}: MainPanelProps) {
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   return (
@@ -48,7 +66,18 @@ export function MainPanel({ activeFilter, onFilterChange, categories, activeCate
       </div>
 
       <div className={styles["main-panel__content"]}>
-        <TaskList tasks={tasks} filter={activeFilter} onFilterChange={onFilterChange} activeCategoryId={activeCategoryId} categories={categories} />
+        <TaskList
+          tasks={tasks}
+          filter={activeFilter}
+          onFilterChange={onFilterChange}
+          activeCategoryId={activeCategoryId}
+          onCategoryChange={onCategoryChange}
+          categories={categories}
+          onDeleteTask={onDeleteTask}
+          onSetTaskToToday={onSetTaskToToday}
+          onDuplicateTask={onDuplicateTask}
+          onToggleComplete={onToggleComplete}
+        />
         <CompletedTaskList />
       </div>
 

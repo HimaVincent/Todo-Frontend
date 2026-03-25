@@ -5,13 +5,20 @@ interface TaskFormProps {
   onClose: () => void;
   onAddTask: (task: any) => void;
   categories: { id: number; name: string }[];
+  mode?: "add" | "duplicate";
+  initialData?: {
+    title: string;
+    categoryId: number | null;
+    dueAt?: string | null;
+    notes?: string | null;
+  };
 }
 
-export function TaskForm({ onClose, onAddTask, categories }: TaskFormProps) {
-  const [title, setTitle] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [dueDate, setDueDate] = useState("");
-  const [notes, setNotes] = useState("");
+export function TaskForm({ onClose, onAddTask, categories, mode = "add", initialData }: TaskFormProps) {
+  const [title, setTitle] = useState(initialData?.title ?? "");
+  const [categoryId, setCategoryId] = useState(initialData?.categoryId?.toString() ?? "");
+  const [dueDate, setDueDate] = useState(initialData?.dueAt ?? "");
+  const [notes, setNotes] = useState(initialData?.notes ?? "");
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -30,7 +37,7 @@ export function TaskForm({ onClose, onAddTask, categories }: TaskFormProps) {
   return (
     <form className={styles["task-form"]} onSubmit={handleSubmit}>
       <div className={styles["task-form__header"]}>
-        <h3 className={styles["task-form__title"]}>Add Task</h3>
+        <h3 className={styles["task-form__title"]}>{mode === "duplicate" ? "Duplicate task" : "Add Task"}</h3>
       </div>
 
       <div className={styles["task-form__field"]}>
@@ -97,7 +104,7 @@ export function TaskForm({ onClose, onAddTask, categories }: TaskFormProps) {
         </button>
 
         <button className={styles["task-form__button"] + " " + styles["task-form__button--primary"]} type="submit">
-          Save task
+          {mode === "duplicate" ? "Create duplicate" : "Save task"}
         </button>
       </div>
     </form>

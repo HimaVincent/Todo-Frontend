@@ -6,6 +6,7 @@
   display: grid;
   gap: $space-3;
   grid-template-columns: 1fr;
+  margin-bottom: $space-6;
 
   &__search {
     @include input-field;

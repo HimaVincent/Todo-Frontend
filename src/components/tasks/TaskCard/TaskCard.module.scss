@@ -12,6 +12,10 @@
   border-radius: $radius-xl;
   background: $surface-card;
 
+  &:hover {
+    @include hover-lift;
+  }
+
   &__main {
     display: flex;
     align-items: flex-start;
@@ -21,12 +25,45 @@
   }
 
   &__checkbox {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 28px;
     height: 28px;
+    padding: 0;
     border: 2px solid $border-default;
     border-radius: 50%;
+    background: $surface-card;
+    color: transparent;
     flex-shrink: 0;
     margin-top: $space-1;
+    cursor: pointer;
+    transition:
+      background $transition-medium,
+      border-color $transition-medium,
+      color $transition-medium,
+      transform $transition-fast,
+      box-shadow $transition-fast;
+
+    &:hover {
+      border-color: hover-color($color-primary);
+      @include hover-lift;
+    }
+
+    &:focus-visible {
+      @include focus-ring;
+    }
+
+    &--checked {
+      background: $color-primary;
+      border-color: active-color($color-primary);
+      color: $surface-card;
+
+      &:hover {
+        background: hover-color($color-primary);
+        border-color: active-color($color-primary);
+      }
+    }
   }
 
   &__content {

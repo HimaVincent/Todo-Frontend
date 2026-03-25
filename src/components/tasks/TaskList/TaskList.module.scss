@@ -1,4 +1,6 @@
 @use "../../../styles/variables" as *;
+@use "../../../styles/mixins" as *;
+@use "../../../styles/functions" as *;
 
 .task-list {
   display: flex;
@@ -11,24 +13,42 @@
     gap: $space-3;
   }
 
-  &__chip-slot {
+  &__title {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: $space-2;
+    opacity: 0.85;
   }
 
-  &__title {
-    margin: 0;
-    font-size: $text-2xl;
-    font-weight: $font-weight-bold;
-    line-height: 1;
-    color: $text-primary;
+  &__title-text {
+    font: inherit;
+  }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-2 $space-3;
+    border: 2px solid transparent;
+    border-radius: $radius-pill;
+    background: transparent;
+    font-size: $text-sm;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+  }
+
+  &__chip--category {
+    background: $category-chip-bg;
+    color: $category-chip-text;
+    border-color: border-color($category-chip-bg);
   }
 
   &__items {
     display: flex;
     flex-direction: column;
     gap: $space-3;
-    margin: $space-4;
+    margin: 0 $space-4;
   }
 
   &__empty {
