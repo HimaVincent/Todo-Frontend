@@ -16,7 +16,14 @@ export function TaskToolbar({ onAddTask }: TaskToolbarProps) {
         <option value="due-date-desc">Due date (Descending)</option>
       </select>
 
-      <button className={styles["task-toolbar__button"]} type="button" onClick={onAddTask}>
+      <button
+        className={styles["task-toolbar__button"]}
+        type="button"
+        onClick={() => {
+          console.log("TaskToolbar button clicked");
+          onAddTask();
+        }}
+      >
         + Add task
       </button>
     </div>

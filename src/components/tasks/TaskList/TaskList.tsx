@@ -1,7 +1,7 @@
 import { TaskCard } from "../TaskCard/TaskCard";
 import { TaskFilterChips } from "../TaskFilterChips/TaskFilterChips";
 import styles from "./TaskList.module.scss";
-import { EmptyIcon } from "../../../assets/icons";
+import { EmptyState } from "../../common/EmptyState/EmptyState";
 
 type FilterVariant = "today" | "overdue" | "scheduled" | "unscheduled" | "all" | "completed";
 
@@ -17,7 +17,6 @@ interface Task {
   category: string;
   dueAt?: string | null;
   description?: string;
-  filterType: string;
   completed: boolean;
 }
 
@@ -31,6 +30,7 @@ interface TaskListProps {
   onDeleteTask: (taskId: number) => void;
   onSetTaskToToday: (taskId: number) => void;
   onDuplicateTask: (taskId: number) => void;
+  onEditTask: (taskId: number) => void;
   onToggleComplete: (taskId: number) => void;
 }
 
@@ -44,16 +44,42 @@ export function TaskList({
   onDeleteTask,
   onSetTaskToToday,
   onDuplicateTask,
+  onEditTask,
   onToggleComplete,
 }: TaskListProps) {
+  const today = new Date().toISOString().split("T")[0];
+
+  const getTaskDateValue = (dueAt?: string | null) => {
+    if (!dueAt) {
+      return null;
+    }
+    return dueAt.split("T")[0];
+  };
+
+  const doesTaskMatchFilter = (task: Task) => {
+    const taskDate = getTaskDateValue(task.dueAt);
+    if (filter === "all") {
+      return true;
+    }
+    if (filter === "unscheduled") {
+      return taskDate === null;
+    }
+    if (filter === "today") {
+      return taskDate === today;
+    }
+    if (filter === "overdue") {
+      return taskDate !== null && taskDate < today;
+    }
+    if (filter === "scheduled") {
+      return taskDate !== null && taskDate > today;
+    }
+    return false;
+  };
+
   const activeCategoryName = activeCategoryId === null ? null : (categories.find((category) => category.id === activeCategoryId)?.name ?? null);
-
   const activeTasks = tasks.filter((task) => !task.completed);
-
-  const filterMatchedTasks = filter === "all" ? activeTasks : activeTasks.filter((task) => task.filterType === filter);
-
+  const filterMatchedTasks = activeTasks.filter(doesTaskMatchFilter);
   const visibleTasks = activeCategoryId === null ? filterMatchedTasks : filterMatchedTasks.filter((task) => task.categoryId === activeCategoryId);
-
   const showAllTasksHeading = filter === "all" && activeCategoryName === null;
   const showFilterChip = filter !== "all";
   const showCategoryChip = activeCategoryName !== null;
@@ -107,19 +133,14 @@ export function TaskList({
               onDeleteTask={onDeleteTask}
               onSetTaskToToday={onSetTaskToToday}
               onDuplicateTask={onDuplicateTask}
+              onEditTask={onEditTask}
               onToggleComplete={onToggleComplete}
               completed={task.completed}
             />
           ))}
         </div>
       ) : (
-        <div className={styles["task-list__empty"]}>
-          <div className={styles["task-list__empty-icon"]}>
-            <EmptyIcon />
-          </div>
-          <h3 className={styles["task-list__empty-title"]}>No tasks found</h3>
-          <p className={styles["task-list__empty-text"]}>Try a different search or add a new task.</p>
-        </div>
+        <EmptyState title="No tasks found" text="Try a different filter or add a new task." />
       )}
     </div>
   );

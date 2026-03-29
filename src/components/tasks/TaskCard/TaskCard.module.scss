@@ -4,6 +4,7 @@
 @use "../../../styles/breakpoints" as *;
 
 .task-card {
+  width: 100%;
   display: flex;
   flex-direction: column;
   gap: $space-4;

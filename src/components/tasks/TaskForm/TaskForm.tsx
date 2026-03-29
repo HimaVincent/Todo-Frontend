@@ -4,8 +4,9 @@ import styles from "./TaskForm.module.scss";
 interface TaskFormProps {
   onClose: () => void;
   onAddTask: (task: any) => void;
+  onAddCategory: (name: string) => { id: number; name: string } | null;
   categories: { id: number; name: string }[];
-  mode?: "add" | "duplicate";
+  mode?: "add" | "duplicate" | "edit";
   initialData?: {
     title: string;
     categoryId: number | null;
@@ -14,11 +15,13 @@ interface TaskFormProps {
   };
 }
 
-export function TaskForm({ onClose, onAddTask, categories, mode = "add", initialData }: TaskFormProps) {
+export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode = "add", initialData }: TaskFormProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [categoryId, setCategoryId] = useState(initialData?.categoryId?.toString() ?? "");
   const [dueDate, setDueDate] = useState(initialData?.dueAt ?? "");
   const [notes, setNotes] = useState(initialData?.notes ?? "");
+  const [isAddingCategory, setIsAddingCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,10 +37,27 @@ export function TaskForm({ onClose, onAddTask, categories, mode = "add", initial
     onClose();
   };
 
+  const handleCreateCategory = () => {
+    const trimmed = newCategoryName.trim();
+
+    if (!trimmed) {
+      return;
+    }
+
+    const created = onAddCategory(trimmed);
+
+    if (!created) {
+      return;
+    }
+
+    setCategoryId(String(created.id));
+    setNewCategoryName("");
+    setIsAddingCategory(false);
+  };
   return (
     <form className={styles["task-form"]} onSubmit={handleSubmit}>
       <div className={styles["task-form__header"]}>
-        <h3 className={styles["task-form__title"]}>{mode === "duplicate" ? "Duplicate task" : "Add Task"}</h3>
+        <h3 className={styles["task-form__title"]}>{mode === "edit" ? "Edit Task" : mode === "duplicate" ? "Duplicate task" : "Add Task"}</h3>
       </div>
 
       <div className={styles["task-form__field"]}>
@@ -68,6 +88,38 @@ export function TaskForm({ onClose, onAddTask, categories, mode = "add", initial
             </option>
           ))}
         </select>
+        {!isAddingCategory ? (
+          <button type="button" className={styles["task-form__add-category"]} onClick={() => setIsAddingCategory(true)}>
+            + Add new category
+          </button>
+        ) : (
+          <div className={styles["task-form__add-category-box"]}>
+            <input
+              type="text"
+              className={styles["task-form__input"]}
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="New category name"
+            />
+
+            <div className={styles["task-form__add-category-actions"]}>
+              <button type="button" className={styles["task-form__button"]} onClick={handleCreateCategory}>
+                Save
+              </button>
+
+              <button
+                type="button"
+                className={styles["task-form__button"] + " " + styles["task-form__button--secondary"]}
+                onClick={() => {
+                  setIsAddingCategory(false);
+                  setNewCategoryName("");
+                }}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className={styles["task-form__field"]}>
@@ -104,7 +156,7 @@ export function TaskForm({ onClose, onAddTask, categories, mode = "add", initial
         </button>
 
         <button className={styles["task-form__button"] + " " + styles["task-form__button--primary"]} type="submit">
-          {mode === "duplicate" ? "Create duplicate" : "Save task"}
+          {mode === "edit" ? "Update task" : mode === "duplicate" ? "Create duplicate" : "Save task"}
         </button>
       </div>
     </form>

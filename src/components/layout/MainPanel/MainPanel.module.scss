@@ -46,6 +46,8 @@
     flex-direction: column;
     gap: $space-6;
     padding: 0 $space-7 $space-7 $space-7;
+    width: 100%;
+    max-width: 100%;
   }
 
   &__modal {

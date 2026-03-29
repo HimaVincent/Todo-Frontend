@@ -54,6 +54,27 @@
     cursor: pointer;
   }
 
+  &__add-category {
+    margin-top: $space-2;
+    background: none;
+    border: none;
+    color: $color-primary;
+    font-size: $text-sm;
+    cursor: pointer;
+  }
+
+  &__add-category-box {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+    margin-top: $space-2;
+  }
+
+  &__add-category-actions {
+    display: flex;
+    gap: $space-2;
+  }
+
   &__textarea {
     resize: vertical;
   }

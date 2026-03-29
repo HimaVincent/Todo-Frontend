@@ -23,4 +23,43 @@
       align-items: flex-start;
     }
   }
+
+  &__modal {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    padding: $space-4;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 2;
+
+    opacity: 0;
+    animation: fade-in 0.2s ease forwards;
+  }
+
+  &__modal-content {
+    width: 100%;
+    max-width: 32rem;
+    padding: $space-6;
+    border-radius: $radius-xl;
+    background: $surface-card;
+    box-shadow: $shadow-soft;
+
+    transform: translateY(12px) scale(0.98);
+    opacity: 0;
+    animation: modal-enter 0.2s ease forwards;
+  }
+
+  @keyframes fade-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes modal-enter {
+    to {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
 }

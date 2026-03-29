@@ -1,0 +1,43 @@
+@use "../../../styles/variables" as *;
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $space-3;
+  padding: $space-7;
+  text-align: center;
+  border-radius: $radius-xl;
+  border: 1px dashed $border-default;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: $radius-md;
+    background: $completed-bg;
+    color: $text-secondary;
+    box-shadow: $shadow-soft;
+
+    svg {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    font-size: $text-xl;
+    font-weight: $font-weight-bold;
+    color: $text-primary;
+  }
+
+  &__text {
+    margin: 0;
+    font-size: $text-md;
+    color: $text-secondary;
+  }
+}

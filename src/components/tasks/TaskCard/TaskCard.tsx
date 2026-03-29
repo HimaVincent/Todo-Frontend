@@ -10,6 +10,7 @@ interface TaskCardProps {
   onDeleteTask: (taskId: number) => void;
   onSetTaskToToday: (taskId: number) => void;
   onDuplicateTask: (taskId: number) => void;
+  onEditTask: (taskId: number) => void;
   onToggleComplete: (taskId: number) => void;
   completed: boolean;
 }
@@ -23,6 +24,7 @@ export function TaskCard({
   onDeleteTask,
   onSetTaskToToday,
   onDuplicateTask,
+  onEditTask,
   onToggleComplete,
   completed,
 }: TaskCardProps) {
@@ -59,7 +61,12 @@ export function TaskCard({
           <TodayIcon />
         </button>
 
-        <button className={`${styles["task-card__icon-button"]} ${styles["task-card__icon-button--edit"]}`} type="button" aria-label="Edit task">
+        <button
+          className={`${styles["task-card__icon-button"]} ${styles["task-card__icon-button--edit"]}`}
+          type="button"
+          aria-label="Edit task"
+          onClick={() => onEditTask(id)}
+        >
           <EditIcon />
         </button>
 
