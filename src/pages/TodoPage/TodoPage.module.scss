@@ -7,8 +7,15 @@
   padding: $space-4;
   background: $surface-page;
 
+  box-sizing: border-box;
+
   @include tablet {
     padding: $space-6;
+  }
+
+  @include desktop {
+    height: 100vh;
+    overflow: hidden;
   }
 
   &__container {
@@ -21,6 +28,13 @@
     @include tablet {
       flex-direction: row;
       align-items: flex-start;
+    }
+
+    @include desktop {
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      align-items: stretch;
     }
   }
 

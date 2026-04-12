@@ -68,15 +68,17 @@ export function Sidebar({
 
   return (
     <aside className={styles["sidebar"]}>
-      <div className={styles["sidebar__brand"]}>
-        <div className={styles["sidebar__logo"]}>✓</div>
-        <h1 className={styles["sidebar__title"]}>To-Do App</h1>
-      </div>
+      <div className={styles["sidebar__top"]}>
+        <div className={styles["sidebar__brand"]}>
+          <div className={styles["sidebar__logo"]}>✓</div>
+          <h1 className={styles["sidebar__title"]}>To-Do App</h1>
+        </div>
 
-      <FilterCards activeFilter={activeFilter} onChange={onChange} />
+        <FilterCards activeFilter={activeFilter} onChange={onChange} />
 
-      <div className={styles["sidebar__search"]}>
-        <CategorySearch />
+        <div className={styles["sidebar__search"]}>
+          <CategorySearch />
+        </div>
       </div>
 
       <section className={styles["sidebar__categories-section"]}>

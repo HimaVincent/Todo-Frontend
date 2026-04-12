@@ -6,7 +6,12 @@
   width: 100%;
   background: $surface-card;
   border-radius: $radius-xl;
-  overflow: hidden;
+
+  &__top {
+    @include desktop {
+      flex-shrink: 0;
+    }
+  }
 
   &__brand {
     display: flex;
@@ -39,6 +44,33 @@
   &__categories-section {
     padding: $space-6;
     border-top: 1px solid $border-default;
+
+    @include desktop {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(105, 119, 146, 0.28) transparent;
+    }
+
+    @include desktop {
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(105, 119, 146, 0.22);
+        border-radius: $radius-pill;
+      }
+
+      &::-webkit-scrollbar-thumb:hover {
+        background: rgba(105, 119, 146, 0.32);
+      }
+    }
   }
 
   &__categories-header {
@@ -126,9 +158,6 @@
     }
 
     &--primary {
-      background: $color-primary;
-      color: $surface-card;
-
       &:hover:not(:disabled) {
         background: mix(white, $color-primary, 15%);
         @include hover-lift;
@@ -157,14 +186,13 @@
   @include tablet {
     max-width: 320px;
     flex: 0 0 320px;
-
-    &__add-category-actions {
-      flex-direction: row;
-    }
   }
 
   @include desktop {
-    width: 320px;
-    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
   }
 }
