@@ -4,7 +4,7 @@ import styles from "./TaskForm.module.scss";
 interface TaskFormProps {
   onClose: () => void;
   onAddTask: (task: any) => void;
-  onAddCategory: (name: string) => { id: number; name: string } | null;
+  onAddCategory: (name: string) => Promise<{ id: number; name: string } | null>;
   categories: { id: number; name: string }[];
   mode?: "add" | "duplicate" | "edit";
   initialData?: {
@@ -37,14 +37,14 @@ export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode =
     onClose();
   };
 
-  const handleCreateCategory = () => {
+  const handleCreateCategory = async () => {
     const trimmed = newCategoryName.trim();
 
     if (!trimmed) {
       return;
     }
 
-    const created = onAddCategory(trimmed);
+    const created = await onAddCategory(trimmed);
 
     if (!created) {
       return;
