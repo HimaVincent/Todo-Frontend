@@ -13,6 +13,7 @@ export interface TaskResponse {
   notes?: string | null;
   dueAt: string | null;
   completed?: boolean;
+  completedAt?: string | null;
   categoryId: number | null;
   categoryName?: string | null;
 }
@@ -25,6 +26,7 @@ export interface Task {
   dueAt: string | null;
   description?: string;
   completed: boolean;
+  completedAt?: string | null;
 }
 
 function formatDueAtForBackend(dueAt: string | null) {
@@ -52,6 +54,7 @@ function mapTaskResponseToTask(task: TaskResponse): Task {
     dueAt: formatDueAtForFrontend(task.dueAt),
     description: task.notes ?? undefined,
     completed: task.completed ?? false,
+    completedAt: task.completedAt ?? null,
   };
 }
 
@@ -60,12 +63,29 @@ export async function getTasks(): Promise<Task[]> {
   return tasks.map(mapTaskResponseToTask);
 }
 
-export async function createTask(task: CreateTaskRequest): Promise<TaskResponse> {
-  return apiRequest("/tasks", {
+export async function createTask(task: CreateTaskRequest): Promise<Task> {
+  const createdTask = await apiRequest("/tasks", {
     method: "POST",
     body: JSON.stringify({
       ...task,
       dueAt: formatDueAtForBackend(task.dueAt),
     }),
+  });
+
+  return mapTaskResponseToTask(createdTask);
+}
+
+export async function updateTaskCompletion(taskId: number, completed: boolean): Promise<Task> {
+  const updatedTask = await apiRequest(`/tasks/${taskId}/completion`, {
+    method: "PATCH",
+    body: JSON.stringify({ completed }),
+  });
+
+  return mapTaskResponseToTask(updatedTask);
+}
+
+export async function deleteTask(taskId: number): Promise<void> {
+  await apiRequest(`/tasks/${taskId}`, {
+    method: "DELETE",
   });
 }

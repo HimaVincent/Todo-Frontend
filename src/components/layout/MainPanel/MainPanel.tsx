@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { CompletedTaskList } from "../../tasks/CompletedTaskList/CompletedTaskList";
 import { TaskList } from "../../tasks/TaskList/TaskList";
 import { TaskToolbar } from "../../tasks/TaskToolbar/TaskToolbar";
@@ -13,6 +14,7 @@ interface Task {
   dueAt?: string | null;
   description?: string;
   completed: boolean;
+  completedAt?: string | null;
 }
 
 interface MainPanelProps {
@@ -44,6 +46,9 @@ export function MainPanel({
   onEditTask,
   onToggleComplete,
 }: MainPanelProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortType, setSortType] = useState("newest");
+
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "Australia/Melbourne",
   });
@@ -76,9 +81,6 @@ export function MainPanel({
 
     return false;
   };
-
-  const completedTasks = tasks.filter((task) => task.completed);
-  const filteredCompletedTasks = completedTasks.filter(doesTaskMatchCompletedFilter);
 
   const shouldShowFilteredCompletedSection =
     activeFilter === "all" || activeFilter === "today" || activeFilter === "scheduled" || activeFilter === "unscheduled";
@@ -113,6 +115,48 @@ export function MainPanel({
 
   const dueTodayCount = tasks.filter((task) => !task.completed && task.dueAt?.split("T")[0] === todayDateValue).length;
 
+  const visibleTasks = tasks
+    .filter((task) => {
+      return task.title.toLowerCase().includes(searchQuery.toLowerCase());
+    })
+    .sort((a, b) => {
+      if (sortType === "newest") {
+        return b.id - a.id;
+      }
+
+      if (sortType === "title-asc") {
+        return a.title.localeCompare(b.title);
+      }
+
+      if (sortType === "title-desc") {
+        return b.title.localeCompare(a.title);
+      }
+
+      if (sortType === "due-date-asc") {
+        if (!a.dueAt) return 1;
+        if (!b.dueAt) return -1;
+        return new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime();
+      }
+
+      if (sortType === "due-date-desc") {
+        if (!a.dueAt) return 1;
+        if (!b.dueAt) return -1;
+        return new Date(b.dueAt).getTime() - new Date(a.dueAt).getTime();
+      }
+
+      return 0;
+    });
+
+  const completedTasks = visibleTasks
+    .filter((task) => task.completed)
+    .sort((a, b) => {
+      if (!a.completedAt) return 1;
+      if (!b.completedAt) return -1;
+
+      return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
+    });
+  const filteredCompletedTasks = completedTasks.filter(doesTaskMatchCompletedFilter);
+
   return (
     <section className={styles["main-panel"]}>
       <header className={styles["main-panel__header"]}>
@@ -123,16 +167,16 @@ export function MainPanel({
       </header>
 
       <div className={styles["main-panel__toolbar"]}>
-        <TaskToolbar onAddTask={onOpenAddTask} />
+        <TaskToolbar onAddTask={onOpenAddTask} onSearchChange={setSearchQuery} onSortChange={setSortType} />
       </div>
 
       <div className={styles["main-panel__content"]}>
         {activeFilter === "completed" ? (
-          <CompletedTaskList tasks={completedTasks.slice().reverse()} onRestoreTask={onToggleComplete} onDeleteTask={onDeleteTask} />
+          <CompletedTaskList tasks={completedTasks} onRestoreTask={onToggleComplete} onDeleteTask={onDeleteTask} />
         ) : (
           <>
             <TaskList
-              tasks={tasks}
+              tasks={visibleTasks.filter((task) => !task.completed)}
               filter={activeFilter}
               onFilterChange={onFilterChange}
               activeCategoryId={activeCategoryId}
@@ -146,7 +190,7 @@ export function MainPanel({
             />
 
             {shouldShowFilteredCompletedSection ? (
-              <CompletedTaskList tasks={filteredCompletedTasks.slice().reverse()} onRestoreTask={onToggleComplete} onDeleteTask={onDeleteTask} />
+              <CompletedTaskList tasks={filteredCompletedTasks} onRestoreTask={onToggleComplete} onDeleteTask={onDeleteTask} />
             ) : null}
           </>
         )}

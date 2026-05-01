@@ -29,6 +29,12 @@
     color: $text-secondary;
   }
 
+  &__error {
+    margin: 0;
+    font-size: $text-sm;
+    color: $overdue-text;
+  }
+
   &__input,
   &__select,
   &__textarea {
@@ -66,13 +72,26 @@
   &__add-category-box {
     display: flex;
     flex-direction: column;
-    gap: $space-2;
+    gap: $space-4;
     margin-top: $space-2;
+
+    padding: $space-5;
+    border: 1px solid $border-default;
+    border-radius: $radius-xl;
+    background: $surface-page;
+  }
+
+  &__input--white {
+    background: $surface-card;
   }
 
   &__add-category-actions {
     display: flex;
     gap: $space-2;
+
+    & > button {
+      flex: 1;
+    }
   }
 
   &__textarea {
@@ -100,6 +119,12 @@
 
     &:focus-visible {
       @include focus-ring;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
     }
 
     &--secondary {

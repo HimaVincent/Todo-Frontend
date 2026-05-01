@@ -1,3 +1,4 @@
+@use "sass:color";
 @use "../../../styles/variables" as *;
 @use "../../../styles/mixins" as *;
 @use "../../../styles/functions" as *;
@@ -17,7 +18,7 @@
     display: grid;
     place-items: center;
     padding: $space-4;
-    z-index: 50;
+    z-index: 100;
   }
 
   &__header {
@@ -73,7 +74,7 @@
 
     &:hover {
       @include hover-lift;
-      background: mix(black, $surface-card, 15%);
+      background: color.mix(black, $surface-card, 15%);
     }
   }
 }

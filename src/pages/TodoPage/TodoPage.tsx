@@ -4,7 +4,7 @@ import { MainPanel } from "../../components/layout/MainPanel/MainPanel";
 import { CategoryDeleteModal } from "../../components/categories/CategoryDeleteModal/CategoryDeleteModal";
 import { TaskDeleteModal } from "../../components/tasks/TaskDeleteModal/TaskDeleteModal";
 import { TaskForm } from "../../components/tasks/TaskForm/TaskForm";
-import { getTasks } from "../../services/taskService";
+import { getTasks, createTask, updateTaskCompletion, deleteTask } from "../../services/taskService";
 import { getCategories, createCategory } from "../../services/categoryService";
 import styles from "./TodoPage.module.scss";
 
@@ -24,6 +24,7 @@ interface Task {
   dueAt: string | null;
   description?: string;
   completed: boolean;
+  completedAt?: string | null;
 }
 
 interface NewTaskInput {
@@ -139,18 +140,13 @@ export function TodoPage() {
   const handleOpenAddTask = () => setIsAddTaskOpen(true);
   const handleCloseAddTask = () => setIsAddTaskOpen(false);
 
-  const handleAddTask = (newTask: NewTaskInput) => {
-    const category = categories.find((c) => c.id === newTask.categoryId);
-    const taskToAdd: Task = {
-      id: Date.now(),
-      title: newTask.title,
-      categoryId: newTask.categoryId,
-      category: category ? category.name : "Uncategorised",
-      dueAt: newTask.dueAt,
-      description: newTask.notes ?? undefined,
-      completed: false,
-    };
-    setTasks((prevTasks) => [taskToAdd, ...prevTasks]);
+  const handleAddTask = async (newTask: NewTaskInput) => {
+    try {
+      const createdTask = await createTask(newTask);
+      setTasks((prevTasks) => [createdTask, ...prevTasks]);
+    } catch (error) {
+      console.error("Failed to create task", error);
+    }
   };
 
   const handleSetTaskToToday = (taskId: number) => {
@@ -179,7 +175,7 @@ export function TodoPage() {
     setTaskToEdit(task);
   };
 
-  const handleUpdateTask = (updatedTaskData: any) => {
+  const handleUpdateTask = async (updatedTaskData: any) => {
     if (!taskToEdit) return;
     const category = categories.find((c) => c.id === updatedTaskData.categoryId);
     setTasks((prevTasks) =>
@@ -199,10 +195,15 @@ export function TodoPage() {
     setTaskToEdit(null);
   };
 
-  const handleDeleteTask = (taskId: number) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-    setTaskToDelete(task);
+  const handleDeleteTask = async (taskId: number) => {
+    console.log("DELETE CLICKED:", taskId);
+    try {
+      await deleteTask(taskId);
+
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
   };
 
   const handleConfirmDeleteTask = () => {
@@ -215,22 +216,6 @@ export function TodoPage() {
     setTaskToDelete(null);
   };
 
-  const handleToggleComplete = (taskId: number) => {
-    setTasks((prevTasks) => {
-      const taskToToggle = prevTasks.find((task) => task.id === taskId);
-      if (!taskToToggle) return prevTasks;
-      const updatedTask = {
-        ...taskToToggle,
-        completed: !taskToToggle.completed,
-      };
-      const remainingTasks = prevTasks.filter((task) => task.id !== taskId);
-      if (!taskToToggle.completed) {
-        return [...remainingTasks, updatedTask];
-      }
-      return [updatedTask, ...remainingTasks];
-    });
-  };
-
   const handleCloseTaskForm = () => {
     if (taskToEdit) {
       setTaskToEdit(null);
@@ -241,6 +226,20 @@ export function TodoPage() {
       return;
     }
     handleCloseAddTask();
+  };
+
+  const handleToggleTaskCompletion = async (taskId: number) => {
+    const taskToUpdate = tasks.find((task) => task.id === taskId);
+
+    if (!taskToUpdate) return;
+
+    try {
+      const updatedTask = await updateTaskCompletion(taskId, !taskToUpdate.completed);
+
+      setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? updatedTask : task)));
+    } catch (error) {
+      console.error("Error updating task completion:", error);
+    }
   };
 
   const taskFormInitialData = taskToEdit ?? taskToDuplicate;
@@ -271,7 +270,7 @@ export function TodoPage() {
           onSetTaskToToday={handleSetTaskToToday}
           onDuplicateTask={handleDuplicateTask}
           onEditTask={handleEditTask}
-          onToggleComplete={handleToggleComplete}
+          onToggleComplete={handleToggleTaskCompletion}
         />
       </div>
 

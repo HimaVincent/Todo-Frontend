@@ -3,7 +3,7 @@ import styles from "./TaskForm.module.scss";
 
 interface TaskFormProps {
   onClose: () => void;
-  onAddTask: (task: any) => void;
+  onAddTask: (task: any) => Promise<void>;
   onAddCategory: (name: string) => Promise<{ id: number; name: string } | null>;
   categories: { id: number; name: string }[];
   mode?: "add" | "duplicate" | "edit";
@@ -23,37 +23,53 @@ export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode =
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
 
-  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+  const trimmedTitle = title.trim();
+  const isTitleInvalid = !trimmedTitle;
+  const trimmedCategoryName = newCategoryName.trim();
+  const isCategoryInvalid = !trimmedCategoryName;
+  const isDuplicateCategory = categories.some((category) => category.name.toLowerCase() === trimmedCategoryName.toLowerCase());
+  const isCategorySaveDisabled = isCategoryInvalid || isDuplicateCategory;
+
+  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (isTitleInvalid) {
+      return;
+    }
+
     const newTask = {
-      title: title.trim(),
+      title: trimmedTitle,
       categoryId: categoryId ? Number(categoryId) : null,
       dueAt: dueDate || null,
       notes: notes.trim() || null,
     };
 
-    onAddTask(newTask);
-    onClose();
+    try {
+      await onAddTask(newTask);
+      onClose();
+    } catch (error) {
+      console.error("Failed to submit task", error);
+    }
   };
 
   const handleCreateCategory = async () => {
     const trimmed = newCategoryName.trim();
-
     if (!trimmed) {
       return;
     }
-
+    const isDuplicate = categories.some((category) => category.name.toLowerCase() === trimmed.toLowerCase());
+    if (isDuplicate) {
+      return;
+    }
     const created = await onAddCategory(trimmed);
-
     if (!created) {
       return;
     }
-
     setCategoryId(String(created.id));
     setNewCategoryName("");
     setIsAddingCategory(false);
   };
+
   return (
     <form className={styles["task-form"]} onSubmit={handleSubmit}>
       <div className={styles["task-form__header"]}>
@@ -73,6 +89,7 @@ export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode =
           placeholder="Enter task title"
           required
         />
+        {title && isTitleInvalid ? <p className={styles["task-form__error"]}>Task title cannot be empty.</p> : null}
       </div>
 
       <div className={styles["task-form__field"]}>
@@ -96,14 +113,20 @@ export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode =
           <div className={styles["task-form__add-category-box"]}>
             <input
               type="text"
-              className={styles["task-form__input"]}
+              className={`${styles["task-form__input"]} ${styles["task-form__input--white"]}`}
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder="New category name"
             />
+            {newCategoryName && isDuplicateCategory ? <p className={styles["task-form__error"]}>Category already exists.</p> : null}
 
             <div className={styles["task-form__add-category-actions"]}>
-              <button type="button" className={styles["task-form__button"]} onClick={handleCreateCategory}>
+              <button
+                type="button"
+                className={`${styles["task-form__button"]} ${styles["task-form__button--primary"]}`}
+                onClick={handleCreateCategory}
+                disabled={isCategorySaveDisabled}
+              >
                 Save
               </button>
 
@@ -155,7 +178,7 @@ export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode =
           Cancel
         </button>
 
-        <button className={styles["task-form__button"] + " " + styles["task-form__button--primary"]} type="submit">
+        <button className={styles["task-form__button"] + " " + styles["task-form__button--primary"]} type="submit" disabled={isTitleInvalid}>
           {mode === "edit" ? "Update task" : mode === "duplicate" ? "Create duplicate" : "Save task"}
         </button>
       </div>
