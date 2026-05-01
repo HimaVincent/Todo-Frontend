@@ -4,7 +4,7 @@ import { MainPanel } from "../../components/layout/MainPanel/MainPanel";
 import { CategoryDeleteModal } from "../../components/categories/CategoryDeleteModal/CategoryDeleteModal";
 import { TaskDeleteModal } from "../../components/tasks/TaskDeleteModal/TaskDeleteModal";
 import { TaskForm } from "../../components/tasks/TaskForm/TaskForm";
-import { getTasks, createTask, updateTaskCompletion, deleteTask } from "../../services/taskService";
+import { getTasks, createTask, updateTask, updateTaskCompletion, deleteTask } from "../../services/taskService";
 import { getCategories, createCategory } from "../../services/categoryService";
 import styles from "./TodoPage.module.scss";
 
@@ -149,18 +149,18 @@ export function TodoPage() {
     }
   };
 
-  const handleSetTaskToToday = (taskId: number) => {
-    const today = new Date().toISOString().split("T")[0];
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              dueAt: today,
-            }
-          : task,
-      ),
-    );
+  const handleSetTaskToToday = async (taskId: number) => {
+    try {
+      const today = new Date().toISOString().split("T")[0];
+
+      const updatedTask = await updateTask(taskId, {
+        dueAt: today,
+      });
+
+      setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? updatedTask : task)));
+    } catch (error) {
+      console.error("Error setting task to today:", error);
+    }
   };
 
   const handleDuplicateTask = (taskId: number) => {
@@ -195,21 +195,26 @@ export function TodoPage() {
     setTaskToEdit(null);
   };
 
-  const handleDeleteTask = async (taskId: number) => {
-    console.log("DELETE CLICKED:", taskId);
-    try {
-      await deleteTask(taskId);
+  const handleRequestDeleteTask = (taskId: number) => {
+    const task = tasks.find((task) => task.id === taskId);
 
-      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskId));
+    if (!task) return;
+
+    setTaskToDelete(task);
+  };
+
+  const handleConfirmDeleteTask = async () => {
+    if (!taskToDelete) return;
+
+    try {
+      await deleteTask(taskToDelete.id);
+
+      setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskToDelete.id));
+
+      setTaskToDelete(null);
     } catch (error) {
       console.error("Error deleting task:", error);
     }
-  };
-
-  const handleConfirmDeleteTask = () => {
-    if (!taskToDelete) return;
-    setTasks((prev) => prev.filter((task) => task.id !== taskToDelete.id));
-    setTaskToDelete(null);
   };
 
   const handleCancelDeleteTask = () => {
@@ -266,7 +271,7 @@ export function TodoPage() {
           tasks={tasks}
           onOpenAddTask={handleOpenAddTask}
           onCategoryChange={setActiveCategoryId}
-          onDeleteTask={handleDeleteTask}
+          onDeleteTask={handleRequestDeleteTask}
           onSetTaskToToday={handleSetTaskToToday}
           onDuplicateTask={handleDuplicateTask}
           onEditTask={handleEditTask}

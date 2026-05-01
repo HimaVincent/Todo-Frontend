@@ -75,6 +75,18 @@ export async function createTask(task: CreateTaskRequest): Promise<Task> {
   return mapTaskResponseToTask(createdTask);
 }
 
+export async function updateTask(taskId: number, task: Partial<CreateTaskRequest>): Promise<Task> {
+  const updatedTask = await apiRequest(`/tasks/${taskId}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      ...task,
+      dueAt: formatDueAtForBackend(task.dueAt ?? null),
+    }),
+  });
+
+  return mapTaskResponseToTask(updatedTask);
+}
+
 export async function updateTaskCompletion(taskId: number, completed: boolean): Promise<Task> {
   const updatedTask = await apiRequest(`/tasks/${taskId}/completion`, {
     method: "PATCH",
