@@ -175,24 +175,18 @@ export function TodoPage() {
     setTaskToEdit(task);
   };
 
-  const handleUpdateTask = async (updatedTaskData: any) => {
+  const handleUpdateTask = async (updatedTaskData: NewTaskInput) => {
     if (!taskToEdit) return;
-    const category = categories.find((c) => c.id === updatedTaskData.categoryId);
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskToEdit.id
-          ? {
-              ...task,
-              title: updatedTaskData.title,
-              categoryId: updatedTaskData.categoryId,
-              category: category ? category.name : "Uncategorised",
-              dueAt: updatedTaskData.dueAt,
-              description: updatedTaskData.notes ?? undefined,
-            }
-          : task,
-      ),
-    );
-    setTaskToEdit(null);
+
+    try {
+      const updatedTask = await updateTask(taskToEdit.id, updatedTaskData);
+
+      setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskToEdit.id ? updatedTask : task)));
+
+      setTaskToEdit(null);
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
   };
 
   const handleRequestDeleteTask = (taskId: number) => {
@@ -284,7 +278,7 @@ export function TodoPage() {
           <div className={styles["todo-page__modal-content"]} onClick={(e) => e.stopPropagation()}>
             <TaskForm
               onClose={handleCloseTaskForm}
-              onAddTask={taskToEdit ? handleUpdateTask : handleAddTask}
+              onSubmitTask={taskToEdit ? handleUpdateTask : handleAddTask}
               onAddCategory={handleAddCategory}
               categories={categories}
               mode={taskToEdit ? "edit" : taskToDuplicate ? "duplicate" : "add"}

@@ -3,7 +3,7 @@ import styles from "./TaskForm.module.scss";
 
 interface TaskFormProps {
   onClose: () => void;
-  onAddTask: (task: any) => Promise<void>;
+  onSubmitTask: (task: any) => Promise<void>;
   onAddCategory: (name: string) => Promise<{ id: number; name: string } | null>;
   categories: { id: number; name: string }[];
   mode?: "add" | "duplicate" | "edit";
@@ -15,7 +15,7 @@ interface TaskFormProps {
   };
 }
 
-export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode = "add", initialData }: TaskFormProps) {
+export function TaskForm({ onClose, onSubmitTask, onAddCategory, categories, mode = "add", initialData }: TaskFormProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [categoryId, setCategoryId] = useState(initialData?.categoryId?.toString() ?? "");
   const [dueDate, setDueDate] = useState(initialData?.dueAt ?? "");
@@ -45,7 +45,7 @@ export function TaskForm({ onClose, onAddTask, onAddCategory, categories, mode =
     };
 
     try {
-      await onAddTask(newTask);
+      await onSubmitTask(newTask);
       onClose();
     } catch (error) {
       console.error("Failed to submit task", error);
