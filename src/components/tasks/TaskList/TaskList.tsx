@@ -24,8 +24,8 @@ interface TaskListProps {
   tasks: Task[];
   filter: FilterVariant;
   onFilterChange: (filter: FilterVariant) => void;
-  activeCategoryId: number | null;
-  onCategoryChange: (id: number | null) => void;
+  activeCategoryId: number | "uncategorised" | null;
+  onCategoryChange: (id: number | "uncategorised" | null) => void;
   categories: Category[];
   onDeleteTask: (taskId: number) => void;
   onSetTaskToToday: (taskId: number) => void;
@@ -76,10 +76,20 @@ export function TaskList({
     return false;
   };
 
-  const activeCategoryName = activeCategoryId === null ? null : (categories.find((category) => category.id === activeCategoryId)?.name ?? null);
+  const activeCategoryName =
+    activeCategoryId === null
+      ? null
+      : activeCategoryId === "uncategorised"
+        ? "Uncategorised"
+        : (categories.find((category) => category.id === activeCategoryId)?.name ?? null);
   const activeTasks = tasks.filter((task) => !task.completed);
   const filterMatchedTasks = activeTasks.filter(doesTaskMatchFilter);
-  const visibleTasks = activeCategoryId === null ? filterMatchedTasks : filterMatchedTasks.filter((task) => task.categoryId === activeCategoryId);
+  const visibleTasks =
+    activeCategoryId === null
+      ? filterMatchedTasks
+      : activeCategoryId === "uncategorised"
+        ? filterMatchedTasks.filter((task) => task.categoryId === null)
+        : filterMatchedTasks.filter((task) => task.categoryId === activeCategoryId);
   const showAllTasksHeading = filter === "all" && activeCategoryName === null;
   const showFilterChip = filter !== "all";
   const showCategoryChip = activeCategoryName !== null;

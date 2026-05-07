@@ -15,22 +15,34 @@ interface SidebarProps {
   activeFilter: FilterVariant;
   onChange: (filter: FilterVariant) => void;
   categories: Category[];
-  activeCategoryId: number | null;
-  onCategoryChange: (id: number | null) => void;
+  categorySearchTerm: string;
+  onCategorySearchChange: (value: string) => void;
+  activeCategoryId: number | "uncategorised" | null;
+  onCategoryChange: (id: number | "uncategorised" | null) => void;
   onAddCategory: (name: string) => void;
   onDeleteCategory: (category: Category) => void;
   onRenameCategory: (id: number, name: string) => void;
+  allTasksCount: number;
+  uncategorisedTasksCount: number;
+  getCategoryTaskCount: (categoryId: number) => number;
+  filterCounts: Record<FilterVariant, number>;
 }
 
 export function Sidebar({
   activeFilter,
   onChange,
   categories,
+  categorySearchTerm,
+  onCategorySearchChange,
   activeCategoryId,
   onCategoryChange,
   onAddCategory,
   onDeleteCategory,
   onRenameCategory,
+  allTasksCount,
+  uncategorisedTasksCount,
+  getCategoryTaskCount,
+  filterCounts,
 }: SidebarProps) {
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -74,10 +86,10 @@ export function Sidebar({
           <h1 className={styles["sidebar__title"]}>To-Do App</h1>
         </div>
 
-        <FilterCards activeFilter={activeFilter} onChange={onChange} />
+        <FilterCards activeFilter={activeFilter} onChange={onChange} filterCounts={filterCounts} />
 
         <div className={styles["sidebar__search"]}>
-          <CategorySearch />
+          <CategorySearch value={categorySearchTerm} onChange={onCategorySearchChange} />
         </div>
       </div>
 
@@ -132,6 +144,9 @@ export function Sidebar({
           onCategoryChange={onCategoryChange}
           onDeleteCategory={onDeleteCategory}
           onRenameCategory={onRenameCategory}
+          allTasksCount={allTasksCount}
+          uncategorisedTasksCount={uncategorisedTasksCount}
+          getCategoryTaskCount={getCategoryTaskCount}
         />
       </section>
     </aside>

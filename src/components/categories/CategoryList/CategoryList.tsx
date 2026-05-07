@@ -8,22 +8,48 @@ interface Category {
 
 interface CategoryListProps {
   categories: Category[];
-  activeCategoryId: number | null;
-  onCategoryChange: (id: number | null) => void;
+  activeCategoryId: number | "uncategorised" | null;
+  onCategoryChange: (id: number | "uncategorised" | null) => void;
   onDeleteCategory: (category: Category) => void;
   onRenameCategory: (id: number, name: string) => void;
+  allTasksCount: number;
+  uncategorisedTasksCount: number;
+  getCategoryTaskCount: (categoryId: number) => number;
 }
 
-export function CategoryList({ categories, activeCategoryId, onCategoryChange, onDeleteCategory, onRenameCategory }: CategoryListProps) {
+export function CategoryList({
+  categories,
+  activeCategoryId,
+  onCategoryChange,
+  onDeleteCategory,
+  onRenameCategory,
+  allTasksCount,
+  uncategorisedTasksCount,
+  getCategoryTaskCount,
+}: CategoryListProps) {
   return (
     <div className={styles["category-list"]}>
-      <CategoryListItem name="All tasks" count={0} isActive={activeCategoryId === null} isSystemCategory onClick={() => onCategoryChange(null)} />
+      <CategoryListItem
+        name="All tasks"
+        count={allTasksCount}
+        isActive={activeCategoryId === null}
+        isSystemCategory
+        onClick={() => onCategoryChange(null)}
+      />
+
+      <CategoryListItem
+        name="Uncategorised"
+        count={uncategorisedTasksCount}
+        isActive={activeCategoryId === "uncategorised"}
+        isSystemCategory
+        onClick={() => onCategoryChange("uncategorised")}
+      />
 
       {categories.map((category) => (
         <CategoryListItem
           key={category.id}
           name={category.name}
-          count={0}
+          count={getCategoryTaskCount(category.id)}
           isActive={activeCategoryId === category.id}
           categories={categories}
           onClick={() => onCategoryChange(category.id)}

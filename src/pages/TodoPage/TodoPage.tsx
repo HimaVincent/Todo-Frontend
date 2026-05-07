@@ -5,7 +5,7 @@ import { CategoryDeleteModal } from "../../components/categories/CategoryDeleteM
 import { TaskDeleteModal } from "../../components/tasks/TaskDeleteModal/TaskDeleteModal";
 import { TaskForm } from "../../components/tasks/TaskForm/TaskForm";
 import { getTasks, createTask, updateTask, updateTaskCompletion, deleteTask } from "../../services/taskService";
-import { getCategories, createCategory } from "../../services/categoryService";
+import { getCategories, createCategory, updateCategory, deleteCategory } from "../../services/categoryService";
 import styles from "./TodoPage.module.scss";
 
 type FilterVariant = "today" | "overdue" | "scheduled" | "unscheduled" | "all" | "completed";
@@ -37,9 +37,16 @@ interface NewTaskInput {
 export function TodoPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
+
+  // Filter state
+  const [activeCategoryId, setActiveCategoryId] = useState<number | "uncategorised" | null>(null);
   const [activeFilter, setActiveFilter] = useState<FilterVariant>("all");
+  const [categorySearchTerm, setCategorySearchTerm] = useState("");
+
+  // Category modal state
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
+
+  // Task modal state
   const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
@@ -58,6 +65,8 @@ export function TodoPage() {
     loadData();
   }, []);
 
+  // ===== Category Handlers =====================================================================================================
+
   const handleAddCategory = async (name: string): Promise<Category | null> => {
     const trimmedName = name.trim();
     if (!trimmedName) return null;
@@ -74,7 +83,7 @@ export function TodoPage() {
     }
   };
 
-  const handleRenameCategory = (id: number, newName: string) => {
+  const handleEditCategory = async (id: number, newName: string) => {
     const trimmedName = newName.trim();
     if (!trimmedName) {
       return;
@@ -91,8 +100,24 @@ export function TodoPage() {
     if (alreadyExists) {
       return;
     }
-    setCategories((prevCategories) => prevCategories.map((category) => (category.id === id ? { ...category, name: trimmedName } : category)));
-    setTasks((prevTasks) => prevTasks.map((task) => (task.categoryId === id ? { ...task, category: trimmedName } : task)));
+    try {
+      const updatedCategory = await updateCategory(id, trimmedName);
+
+      setCategories((prevCategories) => prevCategories.map((category) => (category.id === id ? updatedCategory : category)));
+
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.categoryId === id
+            ? {
+                ...task,
+                category: updatedCategory.name,
+              }
+            : task,
+        ),
+      );
+    } catch (error) {
+      console.error("Failed to update category", error);
+    }
   };
 
   const handleDeleteCategoryClick = (category: Category) => {
@@ -103,42 +128,54 @@ export function TodoPage() {
     setCategoryToDelete(null);
   };
 
-  const handleConfirmDeleteCategory = (mode: CategoryDeleteMode) => {
+  const handleConfirmDeleteCategory = async (mode: CategoryDeleteMode) => {
     if (!categoryToDelete) {
       return;
     }
-
-    const deletedCategoryId = categoryToDelete.id;
-
-    setCategories((prevCategories) => prevCategories.filter((category) => category.id !== deletedCategoryId));
-
-    if (mode === "keep_tasks") {
-      setTasks((prevTasks) =>
-        prevTasks.map((task) =>
-          task.categoryId === deletedCategoryId
-            ? {
-                ...task,
-                categoryId: null,
-                category: "Uncategorised",
-              }
-            : task,
-        ),
-      );
+    try {
+      await deleteCategory(categoryToDelete.id, mode);
+      setCategories((prevCategories) => prevCategories.filter((category) => category.id !== categoryToDelete.id));
+      if (mode === "keep_tasks") {
+        setTasks((prevTasks) =>
+          prevTasks.map((task) =>
+            task.categoryId === categoryToDelete.id
+              ? {
+                  ...task,
+                  categoryId: null,
+                  category: "Uncategorised",
+                }
+              : task,
+          ),
+        );
+      }
+      if (mode === "delete_all_tasks") {
+        setTasks((prevTasks) => prevTasks.filter((task) => task.categoryId !== categoryToDelete.id));
+      }
+      if (activeCategoryId === categoryToDelete.id) {
+        setActiveCategoryId(null);
+      }
+      setCategoryToDelete(null);
+    } catch (error) {
+      console.error("Failed to delete category", error);
     }
-
-    if (mode === "delete_all_tasks") {
-      setTasks((prevTasks) => prevTasks.filter((task) => task.categoryId !== deletedCategoryId));
-    }
-
-    if (activeCategoryId === deletedCategoryId) {
-      setActiveCategoryId(null);
-    }
-
-    setCategoryToDelete(null);
   };
+
+  // ===== Task Form Handlers =========================================================================================================
 
   const handleOpenAddTask = () => setIsAddTaskOpen(true);
   const handleCloseAddTask = () => setIsAddTaskOpen(false);
+
+  const handleCloseTaskForm = () => {
+    if (taskToEdit) {
+      setTaskToEdit(null);
+      return;
+    }
+    if (taskToDuplicate) {
+      setTaskToDuplicate(null);
+      return;
+    }
+    handleCloseAddTask();
+  };
 
   const handleAddTask = async (newTask: NewTaskInput) => {
     try {
@@ -148,6 +185,34 @@ export function TodoPage() {
       console.error("Failed to create task", error);
     }
   };
+
+  const handleUpdateTask = async (updatedTaskData: NewTaskInput) => {
+    if (!taskToEdit) return;
+
+    try {
+      const updatedTask = await updateTask(taskToEdit.id, updatedTaskData);
+
+      setTasks((prevTasks) => [updatedTask, ...prevTasks.filter((task) => task.id !== taskToEdit.id)]);
+
+      setTaskToEdit(null);
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  const handleEditTask = (taskId: number) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+    setTaskToEdit(task);
+  };
+
+  const handleDuplicateTask = (taskId: number) => {
+    const task = tasks.find((t) => t.id === taskId);
+    if (!task) return;
+    setTaskToDuplicate(task);
+  };
+
+  // ===== Task Action Handlers =====================================================================================================
 
   const handleSetTaskToToday = async (taskId: number) => {
     try {
@@ -163,31 +228,29 @@ export function TodoPage() {
     }
   };
 
-  const handleDuplicateTask = (taskId: number) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-    setTaskToDuplicate(task);
-  };
+  const handleToggleTaskCompletion = async (taskId: number) => {
+    const taskToUpdate = tasks.find((task) => task.id === taskId);
 
-  const handleEditTask = (taskId: number) => {
-    const task = tasks.find((t) => t.id === taskId);
-    if (!task) return;
-    setTaskToEdit(task);
-  };
-
-  const handleUpdateTask = async (updatedTaskData: NewTaskInput) => {
-    if (!taskToEdit) return;
+    if (!taskToUpdate) return;
 
     try {
-      const updatedTask = await updateTask(taskToEdit.id, updatedTaskData);
+      const updatedTask = await updateTaskCompletion(taskId, !taskToUpdate.completed);
 
-      setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskToEdit.id ? updatedTask : task)));
+      setTasks((prevTasks) => {
+        const remainingTasks = prevTasks.filter((task) => task.id !== taskId);
 
-      setTaskToEdit(null);
+        if (!updatedTask.completed) {
+          return [updatedTask, ...remainingTasks];
+        }
+
+        return [...remainingTasks, updatedTask];
+      });
     } catch (error) {
-      console.error("Error updating task:", error);
+      console.error("Error updating task completion:", error);
     }
   };
+
+  // ===== Task Delete Handlers =========================================================================================================
 
   const handleRequestDeleteTask = (taskId: number) => {
     const task = tasks.find((task) => task.id === taskId);
@@ -215,32 +278,37 @@ export function TodoPage() {
     setTaskToDelete(null);
   };
 
-  const handleCloseTaskForm = () => {
-    if (taskToEdit) {
-      setTaskToEdit(null);
-      return;
-    }
-    if (taskToDuplicate) {
-      setTaskToDuplicate(null);
-      return;
-    }
-    handleCloseAddTask();
+  // ===== Derived Data ==============================================================================================================
+
+  const filteredCategories = categories.filter((category) => category.name.toLowerCase().includes(categorySearchTerm.toLowerCase()));
+
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Australia/Melbourne",
+  });
+
+  const activeTasks = tasks.filter((task) => !task.completed);
+  const completedTasks = tasks.filter((task) => task.completed);
+
+  const getTaskDate = (dueAt: string | null) => (dueAt ? dueAt.split("T")[0] : null);
+
+  const filterCounts = {
+    today: activeTasks.filter((task) => getTaskDate(task.dueAt) === today).length,
+    overdue: activeTasks.filter((task) => {
+      const taskDate = getTaskDate(task.dueAt);
+      return taskDate !== null && taskDate < today;
+    }).length,
+    scheduled: activeTasks.filter((task) => {
+      const taskDate = getTaskDate(task.dueAt);
+      return taskDate !== null && taskDate > today;
+    }).length,
+    unscheduled: activeTasks.filter((task) => task.dueAt === null).length,
+    all: activeTasks.length,
+    completed: completedTasks.length,
   };
 
-  const handleToggleTaskCompletion = async (taskId: number) => {
-    const taskToUpdate = tasks.find((task) => task.id === taskId);
-
-    if (!taskToUpdate) return;
-
-    try {
-      const updatedTask = await updateTaskCompletion(taskId, !taskToUpdate.completed);
-
-      setTasks((prevTasks) => prevTasks.map((task) => (task.id === taskId ? updatedTask : task)));
-    } catch (error) {
-      console.error("Error updating task completion:", error);
-    }
-  };
-
+  const allTasksCount = filterCounts.all;
+  const uncategorisedTasksCount = activeTasks.filter((task) => task.categoryId === null).length;
+  const getCategoryTaskCount = (categoryId: number) => activeTasks.filter((task) => task.categoryId === categoryId).length;
   const taskFormInitialData = taskToEdit ?? taskToDuplicate;
 
   return (
@@ -249,12 +317,18 @@ export function TodoPage() {
         <Sidebar
           activeFilter={activeFilter}
           onChange={setActiveFilter}
-          categories={categories}
+          categories={filteredCategories}
+          categorySearchTerm={categorySearchTerm}
+          onCategorySearchChange={setCategorySearchTerm}
           activeCategoryId={activeCategoryId}
           onCategoryChange={setActiveCategoryId}
           onAddCategory={handleAddCategory}
           onDeleteCategory={handleDeleteCategoryClick}
-          onRenameCategory={handleRenameCategory}
+          onRenameCategory={handleEditCategory}
+          allTasksCount={allTasksCount}
+          uncategorisedTasksCount={uncategorisedTasksCount}
+          getCategoryTaskCount={getCategoryTaskCount}
+          filterCounts={filterCounts}
         />
 
         <MainPanel

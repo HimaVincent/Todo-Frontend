@@ -21,10 +21,10 @@ interface MainPanelProps {
   activeFilter: FilterVariant;
   onFilterChange: (filter: FilterVariant) => void;
   categories: { id: number; name: string }[];
-  activeCategoryId: number | null;
+  activeCategoryId: number | "uncategorised" | null;
+  onCategoryChange: (id: number | "uncategorised" | null) => void;
   tasks: Task[];
   onOpenAddTask: () => void;
-  onCategoryChange: (id: number | null) => void;
   onDeleteTask: (taskId: number) => void;
   onSetTaskToToday: (taskId: number) => void;
   onDuplicateTask: (taskId: number) => void;
@@ -121,7 +121,7 @@ export function MainPanel({
     })
     .sort((a, b) => {
       if (sortType === "newest") {
-        return b.id - a.id;
+        return 0;
       }
 
       if (sortType === "title-asc") {

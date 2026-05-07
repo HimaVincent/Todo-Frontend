@@ -6,18 +6,27 @@ type FilterVariant = "today" | "overdue" | "scheduled" | "unscheduled" | "all" |
 interface FilterCardsProps {
   activeFilter: FilterVariant;
   onChange: (filter: FilterVariant) => void;
+  filterCounts: Record<FilterVariant, number>;
 }
 
-const filters = [
-  { label: "Today", count: 0, variant: "today" as FilterVariant },
-  { label: "Overdue", count: 0, variant: "overdue" as FilterVariant },
-  { label: "Scheduled", count: 0, variant: "scheduled" as FilterVariant },
-  { label: "Unscheduled", count: 1, variant: "unscheduled" as FilterVariant },
-  { label: "All", count: 1, variant: "all" as FilterVariant },
-  { label: "Completed", count: 2, variant: "completed" as FilterVariant },
-];
+export function FilterCards({ activeFilter, onChange, filterCounts }: FilterCardsProps) {
+  const filters = [
+    { label: "Today", count: filterCounts.today, variant: "today" },
+    { label: "Overdue", count: filterCounts.overdue, variant: "overdue" },
+    { label: "Scheduled", count: filterCounts.scheduled, variant: "scheduled" },
+    {
+      label: "Unscheduled",
+      count: filterCounts.unscheduled,
+      variant: "unscheduled",
+    },
+    { label: "All", count: filterCounts.all, variant: "all" },
+    {
+      label: "Completed",
+      count: filterCounts.completed,
+      variant: "completed",
+    },
+  ] as const;
 
-export function FilterCards({ activeFilter, onChange }: FilterCardsProps) {
   return (
     <div className={styles["filter-cards"]}>
       {filters.map((filter) => (

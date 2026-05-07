@@ -89,16 +89,15 @@
   &__add-button {
     padding: $space-2 $space-3;
     border: 2px solid transparent;
-    border-radius: $radius-pill;
-    background: rgba($color-primary, 0.1);
-    color: $color-primary;
+    border-radius: $radius-md;
+    background: $color-primary;
+    color: $surface-card;
     font: inherit;
     font-weight: $font-weight-semibold;
     cursor: pointer;
     transition: $transition-fast;
 
     &:hover {
-      background: rgba($color-primary, 0.2);
       @include hover-lift;
     }
 
@@ -119,7 +118,7 @@
     padding: $space-3;
     border: 1px solid $border-default;
     border-radius: $radius-lg;
-    background: $surface-card;
+    background: $surface-page;
     box-shadow: $shadow-soft;
   }
 

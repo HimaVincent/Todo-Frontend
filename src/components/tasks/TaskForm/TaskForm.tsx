@@ -18,7 +18,7 @@ interface TaskFormProps {
 export function TaskForm({ onClose, onSubmitTask, onAddCategory, categories, mode = "add", initialData }: TaskFormProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
   const [categoryId, setCategoryId] = useState(initialData?.categoryId?.toString() ?? "");
-  const [dueDate, setDueDate] = useState(initialData?.dueAt ?? "");
+  const [dueDate, setDueDate] = useState(initialData?.dueAt ? initialData.dueAt.split("T")[0] : "");
   const [notes, setNotes] = useState(initialData?.notes ?? "");
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -98,13 +98,13 @@ export function TaskForm({ onClose, onSubmitTask, onAddCategory, categories, mod
         </label>
         <select id="task-category" className={styles["task-form__select"]} value={categoryId} onChange={(event) => setCategoryId(event.target.value)}>
           <option value="">No category</option>
-
           {categories.map((category) => (
             <option key={category.id} value={category.id}>
               {category.name}
             </option>
           ))}
         </select>
+
         {!isAddingCategory ? (
           <button type="button" className={styles["task-form__add-category"]} onClick={() => setIsAddingCategory(true)}>
             + Add new category
