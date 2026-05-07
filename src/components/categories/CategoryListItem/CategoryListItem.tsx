@@ -121,6 +121,8 @@ export function CategoryListItem({
               <button
                 className={`${styles["category-list-item__icon-button"]} ${styles["category-list-item__icon-button--edit"]}`}
                 type="button"
+                title="Edit category"
+                aria-label="Edit category"
                 onClick={(event) => {
                   event.stopPropagation();
                   setValue(name);
@@ -133,6 +135,8 @@ export function CategoryListItem({
               <button
                 className={`${styles["category-list-item__icon-button"]} ${styles["category-list-item__icon-button--delete"]}`}
                 type="button"
+                title="Delete category"
+                aria-label="Delete category"
                 onClick={(event) => {
                   event.stopPropagation();
                   onDelete?.();

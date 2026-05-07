@@ -92,10 +92,36 @@
     align-items: center;
     padding: $space-2 $space-3;
     border-radius: $radius-pill;
-    background: hover-color($surface-page);
+    background: $all-bg;
+    color: $all-text;
     font-size: $text-xs;
     line-height: 1;
     white-space: nowrap;
+
+    &--today {
+      background: $today-bg;
+      color: $today-text;
+    }
+
+    &--overdue {
+      background: $overdue-bg;
+      color: $overdue-text;
+    }
+
+    &--scheduled {
+      background: $scheduled-bg;
+      color: $scheduled-text;
+    }
+
+    &--unscheduled {
+      background: $unscheduled-bg;
+      color: $unscheduled-text;
+    }
+
+    &--uncategorised {
+      background: $completed-bg;
+      color: $completed-text;
+    }
   }
 
   &__description {

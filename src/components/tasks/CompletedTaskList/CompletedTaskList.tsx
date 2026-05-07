@@ -70,6 +70,7 @@ export function CompletedTaskList({ tasks, onRestoreTask, onDeleteTask }: Comple
                       type="button"
                       className={`${styles["completed-task-list__icon-button"]} ${styles["completed-task-list__icon-button--restore"]}`}
                       onClick={() => onRestoreTask(task.id)}
+                      title="Restore task"
                       aria-label="Restore task"
                     >
                       <RestoreIcon />
@@ -79,6 +80,7 @@ export function CompletedTaskList({ tasks, onRestoreTask, onDeleteTask }: Comple
                       type="button"
                       className={`${styles["completed-task-list__icon-button"]} ${styles["completed-task-list__icon-button--delete"]}`}
                       onClick={() => onDeleteTask(task.id)}
+                      title="Delete task"
                       aria-label="Delete task"
                     >
                       <DeleteIcon />

@@ -28,6 +28,11 @@ export function TaskCard({
   onToggleComplete,
   completed,
 }: TaskCardProps) {
+  const today = new Date().toISOString().split("T")[0];
+  const taskDate = dueAt ? dueAt.split("T")[0] : null;
+  const dueDateVariant = taskDate === null ? "unscheduled" : taskDate < today ? "overdue" : taskDate === today ? "today" : "scheduled";
+  const formattedDueDate = dueAt ? new Date(dueAt).toLocaleDateString("en-GB") : "No due date";
+
   return (
     <article className={styles["task-card"]}>
       <div className={styles["task-card__main"]}>
@@ -43,8 +48,10 @@ export function TaskCard({
           <h3 className={styles["task-card__title"]}>{title}</h3>
 
           <div className={styles["task-card__meta"]}>
-            <span className={styles["task-card__badge"]}>{category}</span>
-            <span className={styles["task-card__badge"]}>{dueAt || "No due date"}</span>
+            <span className={`${styles["task-card__badge"]} ${styles[`task-card__badge--${dueDateVariant}`]}`}>{`Due: ${formattedDueDate}`}</span>
+            <span className={`${styles["task-card__badge"]} ${category === "Uncategorised" ? styles["task-card__badge--uncategorised"] : ""}`}>
+              {category}
+            </span>
           </div>
 
           {description ? <p className={styles["task-card__description"]}>{description}</p> : null}
@@ -55,6 +62,7 @@ export function TaskCard({
         <button
           className={`${styles["task-card__icon-button"]} ${styles["task-card__icon-button--today"]}`}
           type="button"
+          title="Set task to today"
           aria-label="Set due today"
           onClick={() => onSetTaskToToday(id)}
         >
@@ -64,6 +72,7 @@ export function TaskCard({
         <button
           className={`${styles["task-card__icon-button"]} ${styles["task-card__icon-button--edit"]}`}
           type="button"
+          title="Edit task"
           aria-label="Edit task"
           onClick={() => onEditTask(id)}
         >
@@ -73,6 +82,7 @@ export function TaskCard({
         <button
           className={`${styles["task-card__icon-button"]} ${styles["task-card__icon-button--duplicate"]}`}
           type="button"
+          title="Duplicate task"
           aria-label="Duplicate task"
           onClick={() => onDuplicateTask(id)}
         >
@@ -82,6 +92,7 @@ export function TaskCard({
         <button
           className={`${styles["task-card__icon-button"]} ${styles["task-card__icon-button--delete"]}`}
           type="button"
+          title="Delete task"
           aria-label="Delete task"
           onClick={() => onDeleteTask(id)}
         >
