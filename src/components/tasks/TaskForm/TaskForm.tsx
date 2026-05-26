@@ -87,8 +87,10 @@ export function TaskForm({ onClose, onSubmitTask, onAddCategory, categories, mod
           value={title}
           onChange={(event) => setTitle(event.target.value)}
           placeholder="Enter task title"
+          maxLength={80}
           required
         />
+        <div className={styles["task-form__character-count"]}>{title.length}/80</div>
         {title && isTitleInvalid ? <p className={styles["task-form__error"]}>Task title cannot be empty.</p> : null}
       </div>
 
@@ -117,7 +119,9 @@ export function TaskForm({ onClose, onSubmitTask, onAddCategory, categories, mod
               value={newCategoryName}
               onChange={(e) => setNewCategoryName(e.target.value)}
               placeholder="New category name"
+              maxLength={40}
             />
+            <div className={styles["task-form__character-count"]}>{newCategoryName.length}/40</div>
             {newCategoryName && isDuplicateCategory ? <p className={styles["task-form__error"]}>Category already exists.</p> : null}
 
             <div className={styles["task-form__add-category-actions"]}>
@@ -170,7 +174,9 @@ export function TaskForm({ onClose, onSubmitTask, onAddCategory, categories, mod
           onChange={(event) => setNotes(event.target.value)}
           placeholder="Add details"
           rows={4}
+          maxLength={180}
         />
+        <div className={styles["task-form__character-count"]}>{notes.length}/180</div>
       </div>
 
       <div className={styles["task-form__actions"]}>

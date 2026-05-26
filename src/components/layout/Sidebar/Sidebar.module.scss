@@ -126,6 +126,13 @@
     @include input-field;
   }
 
+  &__character-count {
+    margin-top: -$space-1;
+    font-size: $text-xs;
+    color: $text-secondary;
+    text-align: right;
+  }
+
   &__add-category-error {
     margin: 0;
     font-size: $text-sm;

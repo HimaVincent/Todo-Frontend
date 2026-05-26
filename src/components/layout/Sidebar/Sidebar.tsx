@@ -112,6 +112,7 @@ export function Sidebar({
               value={newCategoryName}
               onChange={(event) => setNewCategoryName(event.target.value)}
               placeholder="New category"
+              maxLength={40}
               autoFocus
               onKeyDown={(event) => {
                 if (event.key === "Enter") {
@@ -123,6 +124,7 @@ export function Sidebar({
                 }
               }}
             />
+            <div className={styles["sidebar__character-count"]}>{newCategoryName.length}/40</div>
 
             {categoryAlreadyExists ? <p className={styles["sidebar__add-category-error"]}>Category already exists</p> : null}
 

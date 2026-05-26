@@ -81,6 +81,7 @@ export function CategoryListItem({
             type="text"
             value={value}
             onChange={(event) => setValue(event.target.value)}
+            maxLength={40}
             autoFocus
             onKeyDown={(event) => {
               if (event.key === "Enter") {
@@ -92,6 +93,8 @@ export function CategoryListItem({
               }
             }}
           />
+
+          <div className={styles["category-list-item__character-count"]}>{value.length}/40</div>
 
           {categoryAlreadyExists ? <p className={styles["category-list-item__error"]}>Category already exists</p> : null}
 

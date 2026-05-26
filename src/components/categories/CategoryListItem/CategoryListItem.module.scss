@@ -90,6 +90,13 @@
     @include input-field(44px);
   }
 
+  &__character-count {
+    margin-top: -$space-2;
+    font-size: $text-xs;
+    color: $text-secondary;
+    text-align: right;
+  }
+
   &__edit-actions {
     display: flex;
     gap: $space-2;
