@@ -55,6 +55,25 @@
     }
   }
 
+  &__mobile-button {
+    width: 100%;
+    margin-top: $space-5;
+    min-height: 52px;
+    padding: 0 $space-6;
+    border: none;
+    border-radius: $radius-lg;
+    background: $today-bg;
+    color: $today-text;
+    font: inherit;
+    font-size: $text-md;
+    font-weight: $font-weight-medium;
+    cursor: pointer;
+
+    @include desktop {
+      display: none;
+    }
+  }
+
   &__content {
     display: flex;
     flex-direction: column;

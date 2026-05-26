@@ -28,7 +28,9 @@ export function TaskCard({
   onToggleComplete,
   completed,
 }: TaskCardProps) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Australia/Melbourne",
+  });
   const taskDate = dueAt ? dueAt.split("T")[0] : null;
   const dueDateVariant = taskDate === null ? "unscheduled" : taskDate < today ? "overdue" : taskDate === today ? "today" : "scheduled";
   const formattedDueDate = dueAt ? new Date(dueAt).toLocaleDateString("en-GB") : "No due date";

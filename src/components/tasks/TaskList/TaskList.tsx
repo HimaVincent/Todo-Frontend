@@ -49,7 +49,9 @@ export function TaskList({
   onToggleComplete,
   hideEmptyState = false,
 }: TaskListProps) {
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Australia/Melbourne",
+  });
 
   const getTaskDateValue = (dueAt?: string | null) => {
     if (!dueAt) {

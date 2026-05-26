@@ -12,6 +12,8 @@ interface Category {
 }
 
 interface SidebarProps {
+  isOpen: boolean;
+  onClose: () => void;
   activeFilter: FilterVariant;
   onChange: (filter: FilterVariant) => void;
   categories: Category[];
@@ -29,6 +31,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({
+  isOpen,
+  onClose,
   activeFilter,
   onChange,
   categories,
@@ -79,78 +83,94 @@ export function Sidebar({
   const cancelButtonClassName = [styles["sidebar__add-category-button"], styles["sidebar__add-category-button--secondary"]].filter(Boolean).join(" ");
 
   return (
-    <aside className={styles["sidebar"]}>
-      <div className={styles["sidebar__top"]}>
-        <div className={styles["sidebar__brand"]}>
-          <div className={styles["sidebar__logo"]}>✓</div>
-          <h1 className={styles["sidebar__title"]}>To-Do App</h1>
-        </div>
-
-        <FilterCards activeFilter={activeFilter} onChange={onChange} filterCounts={filterCounts} />
-
-        <div className={styles["sidebar__search"]}>
-          <CategorySearch value={categorySearchTerm} onChange={onCategorySearchChange} />
-        </div>
-      </div>
-
-      <section className={styles["sidebar__categories-section"]}>
-        <div className={styles["sidebar__categories-header"]}>
-          <h2 className={styles["sidebar__categories-title"]}>Categories</h2>
-
-          {!isAddingCategory ? (
-            <button className={styles["sidebar__add-button"]} type="button" onClick={() => setIsAddingCategory(true)}>
-              + Add
+    <>
+      {isOpen ? <div className={styles["sidebar__overlay"]} onClick={onClose} /> : null}
+      <aside className={[styles["sidebar"], isOpen ? styles["sidebar--open"] : ""].filter(Boolean).join(" ")}>
+        <div className={styles["sidebar__top"]}>
+          <div className={styles["sidebar__brand"]}>
+            <div className={styles["sidebar__logo"]}>✓</div>
+            <h1 className={styles["sidebar__title"]}>To-Do App</h1>
+            <button type="button" className={styles["sidebar__close"]} onClick={onClose}>
+              ×
             </button>
-          ) : null}
+          </div>
+
+          <FilterCards
+            activeFilter={activeFilter}
+            onChange={(filter) => {
+              onChange(filter);
+              onClose();
+            }}
+            filterCounts={filterCounts}
+          />
+
+          <div className={styles["sidebar__search"]}>
+            <CategorySearch value={categorySearchTerm} onChange={onCategorySearchChange} />
+          </div>
         </div>
 
-        {isAddingCategory ? (
-          <div className={styles["sidebar__add-category"]}>
-            <input
-              className={styles["sidebar__add-category-input"]}
-              type="text"
-              value={newCategoryName}
-              onChange={(event) => setNewCategoryName(event.target.value)}
-              placeholder="New category"
-              maxLength={40}
-              autoFocus
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  handleSaveCategory();
-                }
+        <section className={styles["sidebar__categories-section"]}>
+          <div className={styles["sidebar__categories-header"]}>
+            <h2 className={styles["sidebar__categories-title"]}>Categories</h2>
 
-                if (event.key === "Escape") {
-                  handleCancelCategory();
-                }
-              }}
-            />
-            <div className={styles["sidebar__character-count"]}>{newCategoryName.length}/40</div>
-
-            {categoryAlreadyExists ? <p className={styles["sidebar__add-category-error"]}>Category already exists</p> : null}
-
-            <div className={styles["sidebar__add-category-actions"]}>
-              <button className={saveButtonClassName} type="button" onClick={handleSaveCategory} disabled={isSaveDisabled}>
-                Save
+            {!isAddingCategory ? (
+              <button className={styles["sidebar__add-button"]} type="button" onClick={() => setIsAddingCategory(true)}>
+                + Add
               </button>
-
-              <button className={cancelButtonClassName} type="button" onClick={handleCancelCategory}>
-                Cancel
-              </button>
-            </div>
+            ) : null}
           </div>
-        ) : null}
 
-        <CategoryList
-          categories={categories}
-          activeCategoryId={activeCategoryId}
-          onCategoryChange={onCategoryChange}
-          onDeleteCategory={onDeleteCategory}
-          onRenameCategory={onRenameCategory}
-          allTasksCount={allTasksCount}
-          uncategorisedTasksCount={uncategorisedTasksCount}
-          getCategoryTaskCount={getCategoryTaskCount}
-        />
-      </section>
-    </aside>
+          {isAddingCategory ? (
+            <div className={styles["sidebar__add-category"]}>
+              <input
+                className={styles["sidebar__add-category-input"]}
+                type="text"
+                value={newCategoryName}
+                onChange={(event) => setNewCategoryName(event.target.value)}
+                placeholder="New category"
+                maxLength={40}
+                autoFocus
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleSaveCategory();
+                  }
+
+                  if (event.key === "Escape") {
+                    handleCancelCategory();
+                  }
+                }}
+              />
+              <div className={styles["sidebar__character-count"]}>{newCategoryName.length}/40</div>
+
+              {categoryAlreadyExists ? <p className={styles["sidebar__add-category-error"]}>Category already exists</p> : null}
+
+              <div className={styles["sidebar__add-category-actions"]}>
+                <button className={saveButtonClassName} type="button" onClick={handleSaveCategory} disabled={isSaveDisabled}>
+                  Save
+                </button>
+
+                <button className={cancelButtonClassName} type="button" onClick={handleCancelCategory}>
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : null}
+
+          <CategoryList
+            categories={categories}
+            activeCategoryId={activeCategoryId}
+            onCategoryChange={(categoryId) => {
+              onCategoryChange(categoryId);
+              onClose();
+            }}
+            onDeleteCategory={onDeleteCategory}
+            onRenameCategory={onRenameCategory}
+            allTasksCount={allTasksCount}
+            uncategorisedTasksCount={uncategorisedTasksCount}
+            getCategoryTaskCount={getCategoryTaskCount}
+          />
+        </section>
+      </aside>
+    </>
   );
 }

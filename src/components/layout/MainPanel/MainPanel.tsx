@@ -18,6 +18,8 @@ interface Task {
 }
 
 interface MainPanelProps {
+  isSidebarOpen: boolean;
+  onOpenSidebar: () => void;
   activeFilter: FilterVariant;
   onFilterChange: (filter: FilterVariant) => void;
   categories: { id: number; name: string }[];
@@ -33,6 +35,7 @@ interface MainPanelProps {
 }
 
 export function MainPanel({
+  onOpenSidebar,
   activeFilter,
   onFilterChange,
   categories,
@@ -191,6 +194,9 @@ export function MainPanel({
         <p className={styles["main-panel__subtitle"]}>
           It's {formattedToday}, there {dueTodayCount === 1 ? "is" : "are"} {dueTodayCount} {dueTodayCount === 1 ? "item" : "items"} due today.
         </p>
+        <button className={styles["main-panel__mobile-button"]} onClick={onOpenSidebar} type="button">
+          Filters & Categories
+        </button>
       </header>
 
       <div className={styles["main-panel__toolbar"]}>

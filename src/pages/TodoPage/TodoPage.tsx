@@ -37,6 +37,20 @@ interface NewTaskInput {
 export function TodoPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isSidebarOpen]);
 
   // Filter state
   const [activeCategoryId, setActiveCategoryId] = useState<number | "uncategorised" | null>(null);
@@ -55,13 +69,19 @@ export function TodoPage() {
   useEffect(() => {
     const loadData = async () => {
       try {
+        setIsLoading(true);
+
         const [fetchedTasks, fetchedCategories] = await Promise.all([getTasks(), getCategories()]);
+
         setTasks(fetchedTasks);
         setCategories(fetchedCategories);
       } catch (error) {
         console.error("Failed to load to-do data", error);
+      } finally {
+        setIsLoading(false);
       }
     };
+
     loadData();
   }, []);
 
@@ -216,7 +236,9 @@ export function TodoPage() {
 
   const handleSetTaskToToday = async (taskId: number) => {
     try {
-      const today = new Date().toISOString().split("T")[0];
+      const today = new Date().toLocaleDateString("en-CA", {
+        timeZone: "Australia/Melbourne",
+      });
 
       const updatedTask = await updateTask(taskId, {
         dueAt: today,
@@ -313,16 +335,23 @@ export function TodoPage() {
 
   const handleFilterChange = (filter: FilterVariant) => {
     setActiveFilter(filter);
-
-    if (filter === "all") {
-      setActiveCategoryId(null);
-    }
   };
+
+  if (isLoading) {
+    return (
+      <div className={styles["todo-page__loading"]}>
+        <div className={styles["todo-page__spinner"]}></div>
+        <p>Loading your tasks...</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles["todo-page"]}>
       <div className={styles["todo-page__container"]}>
         <Sidebar
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
           activeFilter={activeFilter}
           onChange={handleFilterChange}
           categories={filteredCategories}
@@ -340,6 +369,8 @@ export function TodoPage() {
         />
 
         <MainPanel
+          isSidebarOpen={isSidebarOpen}
+          onOpenSidebar={() => setIsSidebarOpen(true)}
           activeFilter={activeFilter}
           onFilterChange={handleFilterChange}
           categories={categories}

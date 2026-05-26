@@ -8,6 +8,26 @@
   background: $surface-card;
   border-radius: $radius-xl;
 
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 90vw;
+  max-width: 340px;
+  height: 100vh;
+  z-index: 100;
+  overflow-y: auto;
+  transition: left 0.3s ease;
+
+  &--open {
+    left: 0;
+  }
+
+  @include desktop {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+
   &__top {
     @include desktop {
       flex-shrink: 0;
@@ -36,10 +56,36 @@
   &__title {
     margin: 0;
     font-size: $text-3xl;
+    white-space: nowrap;
   }
 
   &__search {
     padding: 0 $space-6 $space-6;
+  }
+
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 90;
+
+    @include desktop {
+      display: none;
+    }
+  }
+
+  &__close {
+    margin-left: auto;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: $text-xl;
+    border: none;
+    flex-shrink: 0;
+
+    @include desktop {
+      display: none;
+    }
   }
 
   &__categories-section {
@@ -188,11 +234,6 @@
       transform: none;
       box-shadow: none;
     }
-  }
-
-  @include tablet {
-    max-width: 320px;
-    flex: 0 0 320px;
   }
 
   @include desktop {
