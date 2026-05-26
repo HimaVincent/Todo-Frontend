@@ -32,6 +32,7 @@ interface TaskListProps {
   onDuplicateTask: (taskId: number) => void;
   onEditTask: (taskId: number) => void;
   onToggleComplete: (taskId: number) => void;
+  hideEmptyState?: boolean;
 }
 
 export function TaskList({
@@ -46,6 +47,7 @@ export function TaskList({
   onDuplicateTask,
   onEditTask,
   onToggleComplete,
+  hideEmptyState = false,
 }: TaskListProps) {
   const today = new Date().toISOString().split("T")[0];
 
@@ -82,7 +84,7 @@ export function TaskList({
       : activeCategoryId === "uncategorised"
         ? "Uncategorised"
         : (categories.find((category) => category.id === activeCategoryId)?.name ?? null);
-  const activeTasks = tasks.filter((task) => !task.completed);
+  const activeTasks = filter === "completed" ? tasks : tasks.filter((task) => !task.completed);
   const filterMatchedTasks = activeTasks.filter(doesTaskMatchFilter);
   const visibleTasks =
     activeCategoryId === null
@@ -91,7 +93,8 @@ export function TaskList({
         ? filterMatchedTasks.filter((task) => task.categoryId === null)
         : filterMatchedTasks.filter((task) => task.categoryId === activeCategoryId);
   const showAllTasksHeading = filter === "all" && activeCategoryName === null;
-  const showFilterChip = filter !== "all";
+  const showFilterChip = filter !== "all" && filter !== "completed";
+  const showCompletedChip = filter === "completed";
   const showCategoryChip = activeCategoryName !== null;
 
   return (
@@ -102,9 +105,13 @@ export function TaskList({
             "All tasks"
           ) : (
             <>
-              {showFilterChip ? (
+              {showFilterChip || showCompletedChip ? (
                 <>
-                  <TaskFilterChips activeFilter={filter} onClear={() => onFilterChange("all")} />
+                  {showCompletedChip ? (
+                    <TaskFilterChips activeFilter="completed" onClear={() => onFilterChange("all")} />
+                  ) : (
+                    <TaskFilterChips activeFilter={filter} onClear={() => onFilterChange("all")} />
+                  )}
                   <span className={styles["task-list__title-text"]}>tasks</span>
                 </>
               ) : (
@@ -149,7 +156,7 @@ export function TaskList({
             />
           ))}
         </div>
-      ) : (
+      ) : hideEmptyState ? null : (
         <EmptyState title="No tasks found" text="Try a different filter or add a new task." />
       )}
     </div>

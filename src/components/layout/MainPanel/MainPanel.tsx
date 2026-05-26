@@ -63,6 +63,10 @@ export function MainPanel({
   const doesTaskMatchCompletedFilter = (task: Task) => {
     const taskDate = getTaskDateValue(task.dueAt);
 
+    if (activeFilter === "completed") {
+      return true;
+    }
+
     if (activeFilter === "all") {
       return true;
     }
@@ -155,7 +159,30 @@ export function MainPanel({
 
       return new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime();
     });
-  const filteredCompletedTasks = completedTasks.filter(doesTaskMatchCompletedFilter);
+
+  const filteredCompletedTasks = completedTasks.filter(doesTaskMatchCompletedFilter).filter((task) => {
+    if (activeCategoryId === null) {
+      return true;
+    }
+
+    if (activeCategoryId === "uncategorised") {
+      return task.categoryId === null;
+    }
+
+    return task.categoryId === activeCategoryId;
+  });
+
+  const categoryFilteredCompletedTasks = filteredCompletedTasks.filter((task) => {
+    if (activeCategoryId === null) {
+      return true;
+    }
+
+    if (activeCategoryId === "uncategorised") {
+      return task.categoryId === null;
+    }
+
+    return task.categoryId === activeCategoryId;
+  });
 
   return (
     <section className={styles["main-panel"]}>
@@ -172,7 +199,24 @@ export function MainPanel({
 
       <div className={styles["main-panel__content"]}>
         {activeFilter === "completed" ? (
-          <CompletedTaskList tasks={completedTasks} onRestoreTask={onToggleComplete} onDeleteTask={onDeleteTask} />
+          <>
+            <TaskList
+              tasks={[]}
+              filter="completed"
+              hideEmptyState
+              onFilterChange={onFilterChange}
+              activeCategoryId={activeCategoryId}
+              onCategoryChange={onCategoryChange}
+              categories={categories}
+              onDeleteTask={onDeleteTask}
+              onSetTaskToToday={onSetTaskToToday}
+              onDuplicateTask={onDuplicateTask}
+              onEditTask={onEditTask}
+              onToggleComplete={onToggleComplete}
+            />
+
+            <CompletedTaskList tasks={categoryFilteredCompletedTasks} onRestoreTask={onToggleComplete} onDeleteTask={onDeleteTask} />
+          </>
         ) : (
           <>
             <TaskList

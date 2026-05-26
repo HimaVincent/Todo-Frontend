@@ -311,12 +311,20 @@ export function TodoPage() {
   const getCategoryTaskCount = (categoryId: number) => activeTasks.filter((task) => task.categoryId === categoryId).length;
   const taskFormInitialData = taskToEdit ?? taskToDuplicate;
 
+  const handleFilterChange = (filter: FilterVariant) => {
+    setActiveFilter(filter);
+
+    if (filter === "all") {
+      setActiveCategoryId(null);
+    }
+  };
+
   return (
     <div className={styles["todo-page"]}>
       <div className={styles["todo-page__container"]}>
         <Sidebar
           activeFilter={activeFilter}
-          onChange={setActiveFilter}
+          onChange={handleFilterChange}
           categories={filteredCategories}
           categorySearchTerm={categorySearchTerm}
           onCategorySearchChange={setCategorySearchTerm}
@@ -333,7 +341,7 @@ export function TodoPage() {
 
         <MainPanel
           activeFilter={activeFilter}
-          onFilterChange={setActiveFilter}
+          onFilterChange={handleFilterChange}
           categories={categories}
           activeCategoryId={activeCategoryId}
           tasks={tasks}
