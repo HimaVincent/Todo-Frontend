@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import styles from "./CompletedTaskList.module.scss";
 import { RestoreIcon, DeleteIcon } from "../../../assets/icons";
-import { EmptyState } from "../../common/EmptyState/EmptyState";
 
 interface Task {
   id: number;
