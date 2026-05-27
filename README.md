@@ -6,7 +6,7 @@ Built with **React**, **TypeScript**, **Vite** and **SCSS Modules**, this task m
 
 ## Screenshots
 
-![Desktop Mainscreen](screenshots/001.png) ![Desktop](screenshots/002.png)
+![Desktop Mainscreen](screenshots/001.png)
 ![Mobile Mainscreen](screenshots/mobile001.png) ![Mobile](screenshots/mobile002.png)
 
 ---
